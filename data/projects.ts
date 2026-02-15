@@ -14,7 +14,7 @@ export const projects: Project[] = [
       Corpus: "10,000+ Papers",
     },
     links: {
-      github: "https://github.com/mujeeb-gh/rag-chatbot-final",
+      github: "https://github.com/olamideba/rag-chatbot-final",
       demo: "https://huggingface.co/spaces/NenJa/astra",
     },
   },
@@ -36,7 +36,7 @@ export const projects: Project[] = [
       "A full-stack application for managing student data, focusing on data integrity and ease of administrative access.",
     tags: ["Django", "Python", "SQLite3", "Full Stack"],
     links: {
-      github: "https://github.com/mujeeb-gh/student-records-management-system",
+      github: "https://github.com/olamideba/student-records-management-system",
     },
   },
 ];

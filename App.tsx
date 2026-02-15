@@ -284,7 +284,7 @@ const App: React.FC = () => {
               <Mail size={18} />
               <span>olamidebalogun174@gmail.com</span>
             </a>
-            <a href="https://github.com/mujeeb-gh/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
+            <a href="https://github.com/olamideba/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
               <Github size={18} />
               <span>GitHub</span>
             </a>
