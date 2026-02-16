@@ -15,7 +15,7 @@ export const projects: Project[] = [
     },
     links: {
       github: "https://github.com/olamideba/rag-chatbot-final",
-      demo: "https://huggingface.co/spaces/NenJa/astra",
+      demo: "https://huggingface.co/spaces/olamideba/astra",
     },
   },
   // {
