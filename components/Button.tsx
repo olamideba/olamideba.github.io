@@ -2,39 +2,41 @@ import React from 'react';
 
 // DEFINING PROPS
 // Props are like arguments passed to a function.
-// Here we define what configuration this Button accepts.
 interface ButtonProps {
-  children: React.ReactNode; // The text or content inside the button
-  onClick?: () => void;      // Function to run when clicked (optional)
-  variant?: 'primary' | 'secondary' | 'outline'; // Visual style
-  href?: string;             // If provided, renders as a link <a> tag
-  className?: string;        // Allow extra tailwind classes
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'outline';
+  href?: string;
+  external?: boolean;
+  className?: string;
 }
 
-export const Button: React.FC<ButtonProps> = ({ 
-  children, 
-  onClick, 
-  variant = 'primary', // Default value
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  onClick,
+  variant = 'primary',
   href,
-  className = ''
+  external = false,
+  className = '',
 }) => {
-  
-  // Dynamic class generation based on 'variant' prop
-  const baseStyles = "inline-flex items-center justify-center px-6 py-3 rounded-full font-medium transition-all duration-200 ease-in-out cursor-pointer";
-  
+  const baseStyles =
+    "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer";
+
   const variants = {
-    primary: "bg-primary text-white hover:bg-orange-800 shadow-sm",
-    secondary: "bg-stone-200 text-stone-800 hover:bg-stone-300",
-    outline: "border border-stone-300 text-textMain hover:border-primary hover:text-primary"
+    primary: "bg-accent text-white hover:bg-accentHover shadow-sm",
+    secondary: "bg-stone-100 text-ink hover:bg-stone-200",
+    outline: "border border-line text-ink hover:border-accent hover:text-accent",
   };
 
   const styles = `${baseStyles} ${variants[variant]} ${className}`;
 
-  // RENDER LOGIC
-  // If 'href' is provided, we return an <a> tag. Otherwise, a <button>.
   if (href) {
     return (
-      <a href={href} className={styles}>
+      <a
+        href={href}
+        className={styles}
+        {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+      >
         {children}
       </a>
     );

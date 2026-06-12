@@ -3,6 +3,16 @@ import React from "react";
 
 export const experience: Experience[] = [
   {
+    id: "appslevel-ai",
+    role: "Applied AI Engineer",
+    company: "AppsLevel",
+    period: "May 2025 – Present",
+    description: [
+      "Contributing to an AI-powered reinforcement-learning backend in FastAPI and MongoDB, with a RAG pipeline (pgvector + Sentence Transformers) that delivers personalized concept explanations, quizzes, and feedback.",
+    ],
+    type: "Work",
+  },
+  {
     id: "lendsqr-po",
     role: "Product Operations Officer",
     company: "Lendsqr",
