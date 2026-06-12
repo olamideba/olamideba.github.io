@@ -26,6 +26,31 @@ const socials = [
   { href: 'https://huggingface.co/olamideba', label: 'Hugging Face', icon: ExternalLink },
 ];
 
+// Extracts the root domain from a URL for use with the favicon service.
+function faviconUrl(siteUrl: string): string {
+  try {
+    const { hostname } = new URL(siteUrl);
+    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
+  } catch {
+    return '';
+  }
+}
+
+// Favicon displayed next to a project title when a live URL is available.
+const ProjectFavicon: React.FC<{ url: string }> = ({ url }) => {
+  const src = faviconUrl(url);
+  if (!src) return null;
+  return (
+    <img
+      src={src}
+      alt=""
+      width={18}
+      height={18}
+      className="rounded-sm flex-shrink-0 opacity-80"
+    />
+  );
+};
+
 // Small labelled link used inside project cards.
 const ProjectLink: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({
   href, icon: Icon, label,
@@ -264,7 +289,10 @@ const App: React.FC = () => {
             <Reveal key={project.id} delay={i * 80}>
               <article className="group h-full flex flex-col bg-paper p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors">
                 <div className="flex items-start justify-between gap-4 mb-3">
-                  <h4 className="font-serif text-xl text-ink leading-snug">{project.title}</h4>
+                  <div className="flex items-center gap-2.5">
+                    {project.links?.live && <ProjectFavicon url={project.links.live} />}
+                    <h4 className="font-serif text-xl text-ink leading-snug">{project.title}</h4>
+                  </div>
                   <ArrowUpRight
                     className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1"
                     size={18}
@@ -329,7 +357,10 @@ const App: React.FC = () => {
             <Reveal key={project.id} delay={i * 80}>
               <article className="group h-full flex flex-col bg-paper p-6 rounded-2xl border border-line hover:border-accent/40 transition-colors">
                 <div className="flex items-center justify-between gap-3 mb-3">
-                  <h4 className="font-serif text-lg text-ink">{project.title}</h4>
+                  <div className="flex items-center gap-2">
+                    {project.links?.live && <ProjectFavicon url={project.links.live} />}
+                    <h4 className="font-serif text-lg text-ink">{project.title}</h4>
+                  </div>
                   {project.status && (
                     <span className="font-mono text-[10px] uppercase tracking-wider text-accent">
                       {project.status}

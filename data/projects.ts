@@ -29,9 +29,9 @@ export const projects: Project[] = [
     id: "cognito",
     title: "Cognito",
     description:
-      "A real-time, voice-and-vision AI tutor that scores and surfaces a student's “flow state” live during a session.",
+      "A real-time, voice-and-vision AI tutor that scores and surfaces a student's 'flow state' live during a session.",
     category: "ai-ml",
-    status: "Real-time multimodal",
+    status: "Gemini Live Agent Hackathon · 2026",
     highlights: [
       "Built on the Gemini Live API with WebSocket streaming over FastAPI and Cloud Run.",
       "Hardened the realtime layer: fixed reconnection race conditions, audio duplication, and stale session hydration.",
@@ -88,10 +88,10 @@ export const projects: Project[] = [
     id: "nexr",
     title: "NexR",
     description:
-      "Unified social media analytics and insights — “The Forbes of Social Media.” I built the marketing site and the backend.",
+      'Backend for a unified social media analytics platform — "The Forbes of Social Media." I designed and built the API and data layer: modular FastAPI monolith, PostgreSQL, Redis caching, transactional email via Mailgun, and file storage through Supabase. (Frontend handled separately by a dedicated engineer.)',
     category: "full-stack",
     status: "Live",
-    tags: ["React", "TypeScript", "Tailwind v4", "FastAPI", "GCP", "Firestore"],
+    tags: ["FastAPI", "PostgreSQL", "Redis", "Mailgun", "Supabase", "Render", "Python"],
     links: {
       live: "https://nexrcore.com",
     },
