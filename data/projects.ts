@@ -20,7 +20,7 @@ export const projects: Project[] = [
     tags: ["Google ADK", "Gemini", "FastAPI", "Firestore", "Next.js 14", "Multi-agent", "MCP"],
     links: {
       github: "https://github.com/olamideba/grad-paddy",
-      live: "https://grad-paddy-frontend-1001846806436.us-central1.run.app/chat",
+      live: "https://grad-paddy-frontend-1001846806436.us-central1.run.app/",
       devpost: "https://devpost.com/software/grad-paddy",
       video: "https://youtu.be/Je6jsfGuVA4",
     },

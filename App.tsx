@@ -157,7 +157,20 @@ const App: React.FC = () => {
 
       {/* --- HERO --- */}
       <header className="relative pt-36 pb-24 px-6 md:px-10 lg:px-16 overflow-hidden">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-[1.5fr_1fr] gap-12 items-center">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr_1.5fr] gap-12 items-center">
+          {/* Portrait */}
+          <div className="hidden md:block">
+            <div className="relative w-full max-w-[280px]">
+              <div className="absolute -inset-3 rounded-[2rem] bg-accentSoft border border-accentBorder/60 -z-10 rotate-3" />
+              <img
+                src="/images/me.jpg"
+                onError={(e) => { e.currentTarget.src = 'https://picsum.photos/400'; }}
+                alt="Olamide Balogun"
+                className="w-full aspect-square object-cover rounded-3xl border border-line shadow-sm"
+              />
+            </div>
+          </div>
+
           <div className="animate-slide-up">
             <div className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-6 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
@@ -191,19 +204,6 @@ const App: React.FC = () => {
                   <span>{label}</span>
                 </a>
               ))}
-            </div>
-          </div>
-
-          {/* Portrait */}
-          <div className="hidden md:block">
-            <div className="relative w-full max-w-[280px] ml-auto">
-              <div className="absolute -inset-3 rounded-[2rem] bg-accentSoft border border-accentBorder/60 -z-10 rotate-3" />
-              <img
-                src="/images/pfp.jpg"
-                onError={(e) => { e.currentTarget.src = 'https://picsum.photos/400'; }}
-                alt="Olamide Balogun"
-                className="w-full aspect-square object-cover rounded-3xl border border-line shadow-sm"
-              />
             </div>
           </div>
         </div>
@@ -290,7 +290,6 @@ const App: React.FC = () => {
               <article className="group h-full flex flex-col bg-paper p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-2.5">
-                    {project.links?.live && <ProjectFavicon url={project.links.live} />}
                     <h4 className="font-serif text-xl text-ink leading-snug">{project.title}</h4>
                   </div>
                   <ArrowUpRight
