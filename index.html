@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Olamide Balogun | AI Engineer & Researcher</title>
-    <meta name="description" content="Portfolio of Olamide (Abdulmujeeb) Balogun, AI Engineer and Researcher." />
-    
-    <!-- Fonts: Merriweather (Serif/Academic) and Inter (Sans/Modern) -->
+    <title>Olamide Balogun — Applied AI Engineer</title>
+    <meta name="description" content="Olamide (Abdulmujeeb) Balogun — Applied AI Engineer in Lagos, Nigeria. I build and ship production GenAI systems: LLMs, RAG, agentic, and real-time multimodal architectures on Google Cloud." />
+
+    <!-- Fonts: Newsreader (editorial serif), Inter (sans), IBM Plex Mono (labels) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/images/favicon-2.ico">
@@ -21,20 +21,25 @@
         theme: {
           extend: {
             colors: {
-              // Anthropic-inspired palette 🙃
-              primary: '#C15F3C', // Rust Orange
-              secondary: '#F4EFE6', // Creamy Background
-              textMain: '#1C1917', // Warm Black
-              textMuted: '#57534E', // Warm Grey
-              accent: '#E7E5E4', // Light Stone for borders
+              // Minimal warm-neutral palette with a single teal accent
+              ink: '#1C1917',          // warm near-black (text)
+              paper: '#FAFAF8',        // warm off-white (background)
+              muted: '#57534E',        // warm grey (secondary text)
+              faint: '#A8A29E',        // light warm grey
+              line: '#E7E5E4',         // hairline borders
+              accent: '#0F766E',       // teal-700
+              accentHover: '#115E59',  // teal-800
+              accentSoft: '#F0FDFA',   // teal-50
+              accentBorder: '#99F6E4', // teal-200
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               serif: ['Newsreader', 'serif'],
+              mono: ['"IBM Plex Mono"', 'monospace'],
             },
             animation: {
               'fade-in': 'fadeIn 0.5s ease-out',
-              'slide-up': 'slideUp 0.5s ease-out forwards',
+              'slide-up': 'slideUp 0.6s ease-out forwards',
             },
             keyframes: {
               fadeIn: {
@@ -42,7 +47,7 @@
                 '100%': { opacity: '1' },
               },
               slideUp: {
-                '0%': { transform: 'translateY(20px)', opacity: '0' },
+                '0%': { transform: 'translateY(16px)', opacity: '0' },
                 '100%': { transform: 'translateY(0)', opacity: '1' },
               }
             }
@@ -51,12 +56,13 @@
       }
     </script>
     <style>
-      /* Smooth scrolling for anchor links */
       html {
         scroll-behavior: smooth;
       }
       body {
-        background-color: #FDFBF7; /* Very light cream paper color */
+        background-color: #FAFAF8;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
       }
     </style>
 </head>

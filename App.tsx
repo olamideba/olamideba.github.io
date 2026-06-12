@@ -1,304 +1,452 @@
 import React, { useState } from 'react';
-import { BookOpen, Brain, Code, Mail, Github, Linkedin, FileText, Terminal, Shield, GraduationCap, ExternalLink } from 'lucide-react';
+import {
+  Mail, Github, Linkedin, ExternalLink, Play, Award, Trophy,
+  ArrowUpRight, BookOpen, Languages, Search, Microscope, MapPin,
+} from 'lucide-react';
 
 import { Button } from './components/Button';
 import { Section } from './components/Section';
+import { Reveal } from './components/Reveal';
 
 import { projects } from './data/projects';
-import { research } from './data/research';
 import { experience } from './data/experience';
+import { posts } from './data/posts';
+import { Project } from './types';
+
+const navLinks = [
+  { href: '#about', label: 'About' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#writing', label: 'Writing' },
+  { href: '#experience', label: 'Experience' },
+];
+
+const socials = [
+  { href: 'https://github.com/olamideba', label: 'GitHub', icon: Github },
+  { href: 'https://www.linkedin.com/in/olamideba/', label: 'LinkedIn', icon: Linkedin },
+  { href: 'https://huggingface.co/olamideba', label: 'Hugging Face', icon: ExternalLink },
+];
+
+// Small labelled link used inside project cards.
+const ProjectLink: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({
+  href, icon: Icon, label,
+}) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noreferrer"
+    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent transition-colors"
+  >
+    <Icon size={15} strokeWidth={1.75} />
+    <span>{label}</span>
+  </a>
+);
+
+const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
+  const l = project.links;
+  if (!l && !project.privateRepo) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      {l?.github && <ProjectLink href={l.github} icon={Github} label="Code" />}
+      {l?.live && <ProjectLink href={l.live} icon={ExternalLink} label="Live demo" />}
+      {l?.video && <ProjectLink href={l.video} icon={Play} label="Demo video" />}
+      {l?.devpost && <ProjectLink href={l.devpost} icon={Trophy} label="Devpost" />}
+      {l?.certificate && <ProjectLink href={l.certificate} icon={Award} label="Certificate" />}
+      {project.privateRepo && (
+        <span className="inline-flex items-center gap-1.5 text-sm text-faint">
+          <Github size={15} strokeWidth={1.75} />
+          <span>Private repo</span>
+        </span>
+      )}
+    </div>
+  );
+};
+
+const Tags: React.FC<{ tags: string[] }> = ({ tags }) => (
+  <div className="flex flex-wrap gap-2">
+    {tags.map((tag) => (
+      <span
+        key={tag}
+        className="px-2.5 py-1 bg-paper text-muted text-xs font-mono rounded-md border border-line"
+      >
+        {tag}
+      </span>
+    ))}
+  </div>
+);
 
 const App: React.FC = () => {
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const aiProjects = projects.filter((p) => p.category === 'ai-ml');
+  const productProjects = projects.filter((p) => p.category === 'full-stack');
+
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-textMain font-sans selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-paper text-ink font-sans selection:bg-accent selection:text-white antialiased">
 
       {/* --- NAVIGATION --- */}
-      <nav className="fixed top-0 w-full bg-[#FDFBF7]/90 backdrop-blur-md border-b border-stone-200 z-50">
+      <nav className="fixed top-0 w-full bg-paper/80 backdrop-blur-md border-b border-line z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+          <a href="#" className="flex items-center gap-3 group">
             <img
               src="/images/pfp.jpg"
-              onError={(e) => {
-                // Fallback if local image isn't found
-                e.currentTarget.src = 'https://picsum.photos/200';
-              }}
+              onError={(e) => { e.currentTarget.src = 'https://picsum.photos/200'; }}
               alt="Olamide Balogun"
-              className="w-10 h-10 rounded-full object-cover border border-stone-300"
+              className="w-9 h-9 rounded-full object-cover border border-line"
             />
-            <span className="font-serif font-bold text-lg tracking-tight">Olamide Balogun</span>
-          </div>
+            <span className="font-serif font-semibold text-lg tracking-tight">Olamide Balogun</span>
+          </a>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex gap-8 text-sm font-medium text-textMuted">
-            <a href="#about" className="hover:text-primary transition-colors">About</a>
-            <a href="#projects" className="hover:text-primary transition-colors">Projects</a>
-            <a href="#research" className="hover:text-primary transition-colors">Research</a>
-            <a href="#experience" className="hover:text-primary transition-colors">Experience</a>
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} className="hover:text-accent transition-colors">
+                {link.label}
+              </a>
+            ))}
+            <a
+              href="#contact"
+              className="px-4 py-2 rounded-full bg-ink text-white hover:bg-accent transition-colors"
+            >
+              Contact
+            </a>
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={toggleMenu} className="md:hidden text-textMuted">
-            {isMenuOpen ? "Close" : "Menu"}
+          <button onClick={toggleMenu} className="md:hidden text-sm font-medium text-muted">
+            {isMenuOpen ? 'Close' : 'Menu'}
           </button>
         </div>
 
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white border-b border-stone-200 p-6 flex flex-col gap-4 shadow-lg animate-fade-in">
-            <a href="#about" onClick={toggleMenu} className="text-lg">About</a>
-            <a href="#projects" onClick={toggleMenu} className="text-lg">Projects</a>
-            <a href="#research" onClick={toggleMenu} className="text-lg">Research</a>
-            <a href="#experience" onClick={toggleMenu} className="text-lg">Experience</a>
+          <div className="md:hidden bg-paper border-b border-line px-6 py-6 flex flex-col gap-4 shadow-sm animate-fade-in">
+            {[...navLinks, { href: '#contact', label: 'Contact' }].map((link) => (
+              <a key={link.href} href={link.href} onClick={toggleMenu} className="text-lg">
+                {link.label}
+              </a>
+            ))}
           </div>
         )}
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <Section className="pt-5 pb-5 min-h-[90vh] flex flex-col justify-center bg-white">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1 animate-slide-up">
-            <div className="inline-block px-3 py-1 mb-6 text-xs font-bold tracking-wider uppercase text-primary bg-orange-50 rounded-full border border-orange-100">
-              AI Engineer • Researcher
+      {/* --- HERO --- */}
+      <header className="relative pt-36 pb-24 px-6 md:px-10 lg:px-16 overflow-hidden">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-[1.5fr_1fr] gap-12 items-center">
+          <div className="animate-slide-up">
+            <div className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+              Applied AI Engineer
+              <span className="text-faint inline-flex items-center gap-1 normal-case tracking-normal">
+                <MapPin size={13} strokeWidth={1.75} /> Lagos, Nigeria
+              </span>
             </div>
-            <h1 className="font-serif text-5xl md:text-6xl leading-tight mb-6 text-textMain">
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-ink mb-6">
               Olamide Balogun
             </h1>
-            <p className="text-lg md:text-xl text-textMuted mb-8 leading-relaxed max-w-lg">
-              Building reliable AI systems through rigorous research and engineering.
+            <p className="text-lg md:text-xl text-muted leading-relaxed max-w-xl mb-8">
+              I build and ship production GenAI systems — LLMs, retrieval-augmented generation,
+              agentic, and real-time multimodal architectures, mostly on Google Cloud. Currently
+              moving toward AI research engineering.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Button href="#research">View Research</Button>
-              <Button variant="outline" href="#contact">Get in Touch</Button>
+            <div className="flex flex-wrap items-center gap-3 mb-10">
+              <Button href="#projects">View work</Button>
+              <Button variant="outline" href="#contact">Get in touch</Button>
+            </div>
+            <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
+              {socials.map(({ href, label, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 hover:text-accent transition-colors"
+                >
+                  <Icon size={16} strokeWidth={1.75} />
+                  <span>{label}</span>
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Abstract Hero Visual */}
-          <div className="order-1 md:order-2 flex justify-center relative">
-            {/* Decorative abstract circle representing "Knowledge Nodes" */}
-            <div className="relative w-64 h-64 md:w-96 md:h-96">
-              <div className="absolute inset-0 border-2 border-dashed border-primary/30 rounded-full animate-[spin_10s_linear_infinite]"></div>
-              <div className="absolute inset-4 border border-stone-300 rounded-full"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-stone-100 p-8 rounded-full shadow-sm border border-stone-200">
-                  <Brain className="w-16 h-16 text-primary" strokeWidth={1.5} />
-                </div>
-              </div>
-              {/* Orbiting elements */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 bg-white p-2 rounded-lg shadow-sm text-xs font-mono text-primary border border-orange-100">
-                Learn
-              </div>
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-4 bg-white p-2 rounded-lg shadow-sm text-xs font-mono text-primary border border-orange-100">
-                Build
-              </div>
+          {/* Portrait */}
+          <div className="hidden md:block">
+            <div className="relative w-full max-w-[280px] ml-auto">
+              <div className="absolute -inset-3 rounded-[2rem] bg-accentSoft border border-accentBorder/60 -z-10 rotate-3" />
+              <img
+                src="/images/pfp.jpg"
+                onError={(e) => { e.currentTarget.src = 'https://picsum.photos/400'; }}
+                alt="Olamide Balogun"
+                className="w-full aspect-square object-cover rounded-3xl border border-line shadow-sm"
+              />
             </div>
           </div>
         </div>
-      </Section>
+      </header>
 
-      {/* --- PHILOSOPHY QUOTE --- */}
-      {/* <div className="bg-stone-900 text-stone-200 py-16 text-center px-6">
-        <div className="max-w-3xl mx-auto">
-          <p className="font-serif text-2xl md:text-3xl italic opacity-90 mb-4">
-            "The ultimate goal of the educational system is to shift to the individual the burden of pursuing his own education."
-          </p>
-          <p className="text-sm uppercase tracking-widest text-primary font-bold">— John Gardner</p>
-        </div>
-      </div> */}
-
-      {/* --- ABOUT SECTION --- */}
-      <Section id="about" title="About Me">
+      {/* --- ABOUT --- */}
+      <Section id="about" eyebrow="About" title="Engineer first, researcher in the making.">
         <div className="grid md:grid-cols-3 gap-12">
-          <div className="md:col-span-2 space-y-6 text-lg text-textMuted leading-relaxed">
+          <Reveal className="md:col-span-2 space-y-6 text-lg text-muted leading-relaxed">
             <p>
-              I am Olamide, an AI Research Engineer in training. Right now, I am focused on strengthening my foundations in Deep Learning while building projects and exploring research around trustworthy AI, Retrieval-Augmented Generation, and Agentic AI.
+              I'm Olamide, an Applied AI Engineer based in Lagos, Nigeria. Day to day I build and
+              ship production generative-AI systems — large language models, retrieval-augmented
+              generation, agentic workflows, and real-time multimodal architectures — mostly on
+              Google Cloud.
             </p>
             <p>
-              I am passionate about building reliable AI systems. In doing so, I am learning about the core architecture of foundation models, their weaknesses and how to mitigate them.
-              <br /><br />
-              My interest is in improving AI trustworthiness in academia and low-resource contexts.
+              I care about systems that hold up in the real world: durable sessions, graceful
+              failure handling, grounded retrieval, and the unglamorous reliability work that makes
+              an agent trustworthy enough to put in front of users.
             </p>
             <p>
-              I have been curious about <em> metacognition</em>. In a world flooded with information, the ability to discern factual truth from plausible-sounding noise is the most critical skill. This drives my research interest into techniques such as <strong>Retrieval-Augmented Generation (RAG)</strong>.
+              Longer term, I'm moving toward AI research engineering. Right now I'm{' '}
+              <em>currently exploring</em> interests in multilingual and low-resource LLMs,
+              information retrieval, and interpretability — directions, not settled
+              specializations.
             </p>
-          </div>
+          </Reveal>
 
-          {/* Quick Stats Card */}
-          <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm h-fit">
-            <h3 className="font-serif text-xl mb-4 border-b border-stone-100 pb-2">Core Focus</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-sm">
-                <BookOpen className="w-4 h-4 text-primary" />
-                <span>Information Retrieval Architectures</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <Brain className="w-4 h-4 text-primary" />
-                <span>Metacognitive Learning</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <Shield className="w-4 h-4 text-primary" />
-                <span>Trustworthy AI</span>
-              </li>
-            </ul>
-            <div className="mt-6 pt-6 border-t border-stone-100">
-              <div className="text-xs text-stone-400 uppercase tracking-wider mb-2">Education</div>
-              <div className="font-medium">B.Sc Computer Science</div>
-              <div className="text-sm text-stone-500">Afe Babalola University</div>
-              <div className="text-primary font-bold text-sm mt-1">4.88 / 5.00 CGPA</div>
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* --- RESEARCH SECTION --- */}
-      <Section id="research" title="Research & Publications" className="bg-white">
-        <div className="space-y-8">
-          {/* Mapping through research papers. 'map' transforms data into UI components. */}
-          {research.map((paper) => (
-            <div key={paper.id} className="border-l-2 border-primary pl-6 hover:bg-stone-50 transition-colors rounded-r-lg p-4 -ml-4">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <h3 className="text-xl md:text-2xl font-serif font-semibold text-textMain">
-                  {paper.title}
-                </h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap
-                  ${paper.status === 'Published' ? 'bg-green-100 text-green-800' :
-                    paper.status === 'Under Review' ? 'bg-amber-100 text-amber-800' : 'bg-stone-100 text-stone-600'}`}>
-                  {paper.status}
-                </span>
-              </div>
-              <div className="text-sm font-mono text-primary mb-3">{paper.journal} • {paper.year}</div>
-              <p className="text-stone-600 leading-relaxed mb-4">
-                <span className="font-bold text-textMain">Abstract: </span>
-                {paper.abstract}
-              </p>
-              {/* Visualizing the key metric mentioned in the abstract */}
-              <div className="flex gap-6 mt-4 pt-4 border-t border-stone-100">
-                <div>
-                  <div className="text-2xl font-bold text-textMain">97%</div>
-                  <div className="text-xs text-stone-500 uppercase">Retrieval Accuracy</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-textMain">-15%</div>
-                  <div className="text-xs text-stone-500 uppercase">Hallucination Rate</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* --- PROJECTS SECTION --- */}
-      <Section id="projects" title="Projects">
-        <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <div key={project.id} className="group bg-white p-6 rounded-xl border border-stone-200 hover:border-primary/50 hover:shadow-md transition-all">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="font-bold text-xl text-textMain group-hover:text-primary transition-colors">
-                  {project.title}
-                </h3>
-                <div className="flex gap-2">
-                  {project.links?.github && (
-                    <a href={project.links.github} className="text-stone-400 hover:text-primary">
-                      <Github size={18} />
-                    </a>
-                  )}
-                  {project.links?.demo && (
-                    <a href={project.links.demo} className="text-stone-400 hover:text-primary">
-                      <ExternalLink size={18} />
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-stone-600 text-sm mb-6 min-h-[60px]">
-                {project.description}
-              </p>
-
-              {/* Metrics Grid (if metrics exist) */}
-              {project.metrics && (
-                <div className="grid grid-cols-2 gap-2 mb-6 bg-stone-50 p-3 rounded-lg border border-stone-100">
-                  {Object.entries(project.metrics).map(([key, value]) => (
-                    <div key={key}>
-                      <span className="block text-xs text-stone-500 uppercase">{key}</span>
-                      <span className="block font-mono font-bold text-primary">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {project.tags.map(tag => (
-                  <span key={tag} className="px-2 py-1 bg-stone-100 text-stone-600 text-xs rounded-md border border-stone-200">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* --- EXPERIENCE SECTION --- */}
-      <Section id="experience" title="Experience" className="bg-white">
-        <div className="relative border-l border-stone-200 ml-3 md:ml-6 space-y-12">
-          {experience.map((job, index) => (
-            <div key={job.id} className="relative pl-8 md:pl-12">
-              {/* Timeline Dot */}
-              <div className="absolute -left-[5px] md:-left-[5px] top-2 w-3 h-3 rounded-full bg-primary ring-4 ring-white"></div>
-
-              <div className="flex flex-col md:flex-row md:items-baseline gap-2 mb-2">
-                <h3 className="text-xl font-bold text-textMain">{job.role}</h3>
-                <span className="text-primary font-medium">@ {job.company}</span>
-              </div>
-
-              <div className="text-sm text-stone-400 font-mono mb-4">{job.period}</div>
-
-              <ul className="space-y-2">
-                {job.description.map((point, i) => (
-                  <li key={i} className="text-stone-600 flex items-start gap-2 text-sm md:text-base">
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-stone-300 flex-shrink-0"></span>
-                    {point}
-                  </li>
-                ))}
+          <Reveal delay={120} className="h-fit">
+            <div className="bg-white p-6 rounded-2xl border border-line">
+              <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-5">
+                Currently exploring
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3 text-sm">
+                  <Languages className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <span>Multilingual &amp; low-resource LLMs</span>
+                </li>
+                <li className="flex items-start gap-3 text-sm">
+                  <Search className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <span>Information retrieval</span>
+                </li>
+                <li className="flex items-start gap-3 text-sm">
+                  <Microscope className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <span>Interpretability</span>
+                </li>
               </ul>
+              <div className="mt-6 pt-6 border-t border-line">
+                <div className="font-mono text-xs text-faint uppercase tracking-[0.15em] mb-2">
+                  Education
+                </div>
+                <div className="font-medium text-ink">B.Sc Computer Science</div>
+                <div className="text-sm text-muted">Afe Babalola University</div>
+                <div className="text-accent font-semibold text-sm mt-1">4.88 / 5.00 CGPA</div>
+              </div>
             </div>
+          </Reveal>
+        </div>
+      </Section>
+
+      {/* --- PROJECTS --- */}
+      <Section
+        id="projects"
+        eyebrow="Selected work"
+        title="Projects"
+        className="bg-white border-y border-line"
+      >
+        {/* Category A — AI / ML Engineering (primary) */}
+        <Reveal className="mb-8">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <h3 className="font-serif text-2xl text-ink">AI / ML Engineering</h3>
+            <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
+              the focus
+            </span>
+          </div>
+          <p className="text-muted mt-2 max-w-2xl">
+            Production GenAI systems and research — where most of my attention goes.
+          </p>
+        </Reveal>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-20">
+          {aiProjects.map((project, i) => (
+            <Reveal key={project.id} delay={i * 80}>
+              <article className="group h-full flex flex-col bg-paper p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <h4 className="font-serif text-xl text-ink leading-snug">{project.title}</h4>
+                  <ArrowUpRight
+                    className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1"
+                    size={18}
+                  />
+                </div>
+
+                {project.status && (
+                  <div className="inline-flex self-start items-center px-2.5 py-1 mb-4 rounded-full bg-accentSoft border border-accentBorder/60 text-accent text-xs font-medium">
+                    {project.status}
+                  </div>
+                )}
+
+                <p className="text-muted leading-relaxed mb-5">{project.description}</p>
+
+                {project.highlights && (
+                  <ul className="space-y-2.5 mb-5">
+                    {project.highlights.map((point, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 text-sm text-muted">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {project.metrics && (
+                  <div className="grid grid-cols-2 gap-3 mb-5 p-4 rounded-xl bg-white border border-line">
+                    {Object.entries(project.metrics).map(([key, value]) => (
+                      <div key={key}>
+                        <span className="block font-mono font-medium text-accent text-lg">{value}</span>
+                        <span className="block text-xs text-faint uppercase tracking-wide mt-0.5">{key}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* push footer to bottom */}
+                <div className="mt-auto pt-5 space-y-4">
+                  <Tags tags={project.tags} />
+                  <ProjectLinks project={project} />
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* Category B — Full-Stack & Product (secondary) */}
+        <Reveal className="mb-8">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <h3 className="font-serif text-2xl text-ink">Full-Stack &amp; Product Engineering</h3>
+            <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
+              shipping range
+            </span>
+          </div>
+          <p className="text-muted mt-2 max-w-2xl">
+            Live, production software shipped for real stakeholders.
+          </p>
+        </Reveal>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {productProjects.map((project, i) => (
+            <Reveal key={project.id} delay={i * 80}>
+              <article className="group h-full flex flex-col bg-paper p-6 rounded-2xl border border-line hover:border-accent/40 transition-colors">
+                <div className="flex items-center justify-between gap-3 mb-3">
+                  <h4 className="font-serif text-lg text-ink">{project.title}</h4>
+                  {project.status && (
+                    <span className="font-mono text-[10px] uppercase tracking-wider text-accent">
+                      {project.status}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-muted leading-relaxed mb-5">{project.description}</p>
+                <div className="mt-auto space-y-4">
+                  <Tags tags={project.tags} />
+                  <ProjectLinks project={project} />
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      {/* --- WRITING --- */}
+      <Section
+        id="writing"
+        eyebrow="Writing"
+        title="Notes from the build"
+        subtitle="Engineering write-ups on what I'm shipping and learning. More to come."
+      >
+        <div className="space-y-4">
+          {posts.map((post, i) => (
+            <Reveal key={post.id} delay={i * 80}>
+              <a
+                href={post.url}
+                target="_blank"
+                rel="noreferrer"
+                className="group block bg-white p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors"
+              >
+                <div className="flex items-center gap-3 font-mono text-xs text-faint uppercase tracking-[0.15em] mb-3">
+                  <span className="inline-flex items-center gap-1.5 text-accent">
+                    <BookOpen size={13} strokeWidth={1.75} /> {post.platform}
+                  </span>
+                  <span>·</span>
+                  <span>{post.date}</span>
+                  <span>·</span>
+                  <span>{post.readTime}</span>
+                </div>
+                <h3 className="font-serif text-xl md:text-2xl text-ink leading-snug mb-3 group-hover:text-accent transition-colors flex items-start gap-2">
+                  <span>{post.title}</span>
+                  <ArrowUpRight className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1.5" size={18} />
+                </h3>
+                <p className="text-muted leading-relaxed max-w-3xl">{post.excerpt}</p>
+              </a>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      {/* --- EXPERIENCE --- */}
+      <Section
+        id="experience"
+        eyebrow="Experience"
+        title="Where I've worked"
+        className="bg-white border-y border-line"
+      >
+        <div className="relative border-l border-line ml-3 md:ml-4 space-y-12">
+          {experience.map((job, index) => (
+            <Reveal key={job.id} delay={index * 60}>
+              <div className="relative pl-8 md:pl-10">
+                <div className="absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full bg-accent ring-4 ring-white" />
+                <div className="flex flex-col md:flex-row md:items-baseline gap-x-2 gap-y-1 mb-1">
+                  <h3 className="text-lg font-semibold text-ink">{job.role}</h3>
+                  <span className="text-accent font-medium">@ {job.company}</span>
+                </div>
+                <div className="font-mono text-xs text-faint mb-4">{job.period}</div>
+                <ul className="space-y-2">
+                  {job.description.map((point, i) => (
+                    <li key={i} className="text-muted flex items-start gap-2.5 text-sm md:text-base">
+                      <span className="mt-2 w-1.5 h-1.5 rounded-full bg-line flex-shrink-0" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
           ))}
         </div>
       </Section>
 
       {/* --- CONTACT / FOOTER --- */}
-      <footer id="contact" className="bg-stone-900 text-stone-300 py-20 px-6">
+      <footer id="contact" className="bg-ink text-stone-300 py-24 px-6 scroll-mt-20">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-serif text-4xl text-white mb-8">Let's connect theory with practice.</h2>
-          <p className="mb-12 text-lg max-w-2xl mx-auto opacity-80">
-            I am actively seeking MSc opportunities and Research roles where I can contribute to robust, trustworthy and safe AI systems.
+          <div className="font-mono text-xs uppercase tracking-[0.2em] text-accentBorder mb-6">
+            Get in touch
+          </div>
+          <h2 className="font-serif text-4xl md:text-5xl text-white mb-6 tracking-tight">
+            Let's build something reliable.
+          </h2>
+          <p className="mb-12 text-lg max-w-2xl mx-auto text-stone-400 leading-relaxed">
+            I'm always happy to talk about applied AI, GenAI systems, or research collaboration —
+            reach out and let's compare notes.
           </p>
 
-          <div className="flex flex-wrap justify-center gap-6 mb-16">
-            <a href="mailto:olamidebalogun174@gmail.com" className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
-              <Mail size={18} />
-              <span>olamidebalogun174@gmail.com</span>
+          <div className="flex flex-wrap justify-center gap-4 mb-16">
+            <a href="mailto:olamidebalogun174@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+              <Mail size={17} /> olamidebalogun174@gmail.com
             </a>
-            <a href="https://github.com/olamideba/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
-              <Github size={18} />
-              <span>GitHub</span>
+            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+              <Github size={17} /> GitHub
             </a>
-            <a href="https://linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors text-white">
-              <Linkedin size={18} />
-              <span>LinkedIn</span>
+            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+              <Linkedin size={17} /> LinkedIn
+            </a>
+            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+              <ExternalLink size={17} /> Hugging Face
             </a>
           </div>
 
-          <div className="text-sm text-stone-500 pt-8 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p>© {new Date().getFullYear()} Olamide Balogun. Built with React & Tailwind.</p>
-            <p className="italic">"Learning to learn."</p>
+          <div className="text-sm text-stone-500 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3">
+            <p>© {new Date().getFullYear()} Olamide Balogun. Built with React &amp; Tailwind.</p>
+            <p className="font-mono text-xs">Lagos, Nigeria</p>
           </div>
-          <p className="text-sm text-stone-500 pt-4">UI inspired by Anthropic's claude's UI.</p>
         </div>
       </footer>
     </div>

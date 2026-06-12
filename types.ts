@@ -1,20 +1,41 @@
 // TYPESCRIPT INTERFACES
 // =====================
-// These interfaces define the "shape" of our data. 
+// These interfaces define the "shape" of our data.
 // Using types helps catch errors (like missing a title) before the app runs.
+
+export type ProjectCategory = 'ai-ml' | 'full-stack';
+
+export interface ProjectLinks {
+  github?: string;
+  live?: string;        // live demo or deployed site
+  video?: string;       // demo video
+  devpost?: string;
+  certificate?: string;
+}
 
 export interface Project {
   id: string;
   title: string;
   description: string;
+  category: ProjectCategory;
   tags: string[];
-  metrics?: { // '?' means this property is optional
+  status?: string;              // small badge, e.g. "Under review · NIJOTECH"
+  highlights?: string[];        // notable engineering bullets (AI/ML cards)
+  metrics?: {                   // optional headline numbers
     [key: string]: string;
   };
-  links?: {
-    github?: string;
-    demo?: string;
-  };
+  links?: ProjectLinks;
+  privateRepo?: boolean;        // repo exists but is not public
+}
+
+export interface Post {
+  id: string;
+  title: string;
+  excerpt: string;
+  platform: string;             // e.g. "Medium"
+  date: string;
+  readTime: string;
+  url: string;
 }
 
 export interface ResearchPaper {
@@ -22,7 +43,7 @@ export interface ResearchPaper {
   title: string;
   abstract: string;
   journal: string;
-  status: 'Published' | 'Under Review' | 'Submitted'; // Union type: specific allowed strings
+  status: 'Published' | 'Under Review' | 'Submitted';
   year: string;
   links?: {
     pdf?: string;
