@@ -29,7 +29,7 @@ export const Section: React.FC<SectionProps> = ({
               </div>
             )}
             {title && (
-              <h2 className="font-serif text-3xl md:text-4xl tracking-tight text-ink">
+              <h2 className="font-heading text-3xl md:text-4xl tracking-tight text-ink">
                 {title}
               </h2>
             )}

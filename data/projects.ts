@@ -6,6 +6,28 @@ import { Project } from '../types';
 export const projects: Project[] = [
   // ── Category A — AI / ML Engineering ────────────────────────────────────
   {
+    id: "parallax",
+    title: "Parallax",
+    description:
+      "An agent society adopting the Multi Agent Debate Framework to help professors, faculty members, and research labs filter out the noise in student outreach emails.",
+    category: "ai-ml",
+    status: "Qwen Cloud Global AI Hackathon · 2026",
+    highlights: [
+      "Gatekeeper filters spam before it costs a debate; rejections go to a reviewable queue",
+      "Five agents debate each candidate over a shared transcript, ending in an Arbitrator's verdict.",
+      "Every claim is grounded in a receipt from the professor's own publications, never hallucinated.",
+      "Professors replay the debate in a pixel-art seminar room with a synthesized voice per agent.",
+      "No email sends without explicit human approval."
+    ],
+    tags: ["Langraph", "Qwen", "FastAPI", "Supabase", "Next.js 14", "Multi-agent debate", "Alibaba Cloud"],
+    links: {
+      github: "https://github.com/olamideba/parallax",
+      live: "https://parallax-five-chi.vercel.app",
+      devpost: "https://devpost.com/software/parallax-walxpi",
+      video: "https://youtu.be/wA0PStZ8JVU",
+    },
+  },
+  {
     id: "grad-paddy",
     title: "Grad Paddy",
     description:
@@ -67,7 +89,7 @@ export const projects: Project[] = [
     description:
       "A retrieval-augmented system that answers scholarly-research queries over academic sources, built to reduce hallucination in academic settings. My undergraduate final-year project and first research manuscript.",
     category: "ai-ml",
-    status: "Manuscript under review · NIJOTECH",
+    status: "Published · NIJOTECH",
     highlights: [
       "Fine-tuned BAAI/bge-large embeddings over the ACL Anthology with vector-based retrieval.",
       "97% retrieval accuracy and a 15% reduction in hallucination versus baseline LLM responses.",
@@ -80,6 +102,7 @@ export const projects: Project[] = [
     links: {
       github: "https://github.com/olamideba/rag-chatbot-final",
       live: "https://huggingface.co/spaces/olamideba/astra",
+      doi: "https://doi.org/10.67358/njt.2026.5975"
     },
   },
 

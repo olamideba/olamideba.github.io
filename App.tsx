@@ -76,6 +76,7 @@ const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
       {l?.video && <ProjectLink href={l.video} icon={Play} label="Demo video" />}
       {l?.devpost && <ProjectLink href={l.devpost} icon={Trophy} label="Devpost" />}
       {l?.certificate && <ProjectLink href={l.certificate} icon={Award} label="Certificate" />}
+      {l?.doi && <ProjectLink href={l.doi} icon={Microscope} label="Journal publication" />}
       {project.privateRepo && (
         <span className="inline-flex items-center gap-1.5 text-sm text-faint">
           <Github size={15} strokeWidth={1.75} />
@@ -119,7 +120,7 @@ const App: React.FC = () => {
               alt="Olamide Balogun"
               className="w-9 h-9 rounded-full object-cover border border-line"
             />
-            <span className="font-serif font-semibold text-lg tracking-tight">Olamide Balogun</span>
+            <span className="font-heading font-semibold text-lg tracking-tight">Olamide Balogun</span>
           </a>
 
           {/* Desktop Links */}
@@ -179,7 +180,7 @@ const App: React.FC = () => {
                 <MapPin size={13} strokeWidth={1.75} /> Lagos, Nigeria
               </span>
             </div>
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-ink mb-6">
+            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-ink mb-6">
               Olamide Balogun
             </h1>
             <p className="text-lg md:text-xl text-muted leading-relaxed max-w-xl mb-8">
@@ -274,7 +275,7 @@ const App: React.FC = () => {
         {/* Category A — AI / ML Engineering (primary) */}
         <Reveal className="mb-8">
           <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="font-serif text-2xl text-ink">AI / ML Engineering</h3>
+            <h3 className="font-heading text-2xl text-ink">AI / ML Engineering</h3>
             <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
               the focus
             </span>
@@ -290,7 +291,7 @@ const App: React.FC = () => {
               <article className="group h-full flex flex-col bg-paper p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-2.5">
-                    <h4 className="font-serif text-xl text-ink leading-snug">{project.title}</h4>
+                    <h4 className="font-heading text-xl text-ink leading-snug">{project.title}</h4>
                   </div>
                   <ArrowUpRight
                     className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1"
@@ -341,7 +342,7 @@ const App: React.FC = () => {
         {/* Category B — Full-Stack & Product (secondary) */}
         <Reveal className="mb-8">
           <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="font-serif text-2xl text-ink">Full-Stack &amp; Product Engineering</h3>
+            <h3 className="font-heading text-2xl text-ink">Full-Stack &amp; Product Engineering</h3>
             <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
               shipping range
             </span>
@@ -358,7 +359,7 @@ const App: React.FC = () => {
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     {project.links?.live && <ProjectFavicon url={project.links.live} />}
-                    <h4 className="font-serif text-lg text-ink">{project.title}</h4>
+                    <h4 className="font-heading text-lg text-ink">{project.title}</h4>
                   </div>
                   {project.status && (
                     <span className="font-mono text-[10px] uppercase tracking-wider text-accent">
@@ -402,7 +403,7 @@ const App: React.FC = () => {
                   <span>·</span>
                   <span>{post.readTime}</span>
                 </div>
-                <h3 className="font-serif text-xl md:text-2xl text-ink leading-snug mb-3 group-hover:text-accent transition-colors flex items-start gap-2">
+                <h3 className="font-heading text-xl md:text-2xl text-ink leading-snug mb-3 group-hover:text-accent transition-colors flex items-start gap-2">
                   <span>{post.title}</span>
                   <ArrowUpRight className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1.5" size={18} />
                 </h3>
@@ -450,7 +451,7 @@ const App: React.FC = () => {
           <div className="font-mono text-xs uppercase tracking-[0.2em] text-accentBorder mb-6">
             Get in touch
           </div>
-          <h2 className="font-serif text-4xl md:text-5xl text-white mb-6 tracking-tight">
+          <h2 className="font-heading text-4xl md:text-5xl text-white mb-6 tracking-tight">
             Let's build something reliable.
           </h2>
           <p className="mb-12 text-lg max-w-2xl mx-auto text-stone-400 leading-relaxed">

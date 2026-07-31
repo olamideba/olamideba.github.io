@@ -11,6 +11,7 @@ export interface ProjectLinks {
   video?: string;       // demo video
   devpost?: string;
   certificate?: string;
+  doi?: string;
 }
 
 export interface Project {
