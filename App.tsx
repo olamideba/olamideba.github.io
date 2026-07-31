@@ -216,9 +216,8 @@ const App: React.FC = () => {
           <Reveal className="md:col-span-2 space-y-6 text-lg text-muted leading-relaxed">
             <p>
               I'm Olamide, an Applied AI Engineer based in Lagos, Nigeria. Day to day I build and
-              ship production generative-AI systems — large language models, retrieval-augmented
-              generation, agentic workflows, and real-time multimodal architectures — mostly on
-              Google Cloud.
+              ship production agentic applications, building on large language models, retrieval-augmented
+              generation, agentic workflows.
             </p>
             <p>
               I care about systems that hold up in the real world: durable sessions, graceful
