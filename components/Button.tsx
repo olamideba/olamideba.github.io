@@ -1,7 +1,5 @@
 import React from 'react';
 
-// DEFINING PROPS
-// Props are like arguments passed to a function.
 interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
@@ -11,6 +9,9 @@ interface ButtonProps {
   className?: string;
 }
 
+// Square corners, hairline borders, no fills that read as a UI kit button,
+// and no drop shadow. v0.2 section 14a bans soft radius and shadows; the
+// references use rule-underlined or hairline-bordered text instead of pills.
 export const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
@@ -20,12 +21,12 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
 }) => {
   const baseStyles =
-    "inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ease-out cursor-pointer";
+    'inline-flex items-center justify-center gap-2 px-5 py-2.5 type-small transition-colors duration-200 ease-out cursor-pointer';
 
   const variants = {
-    primary: "bg-accent text-white hover:bg-accentHover shadow-sm",
-    secondary: "bg-stone-100 text-ink hover:bg-stone-200",
-    outline: "border border-line text-ink hover:border-accent hover:text-accent",
+    primary: 'bg-rust text-paper hover:bg-rust-mark',
+    secondary: 'bg-sand text-ink hover:bg-rule',
+    outline: 'border border-ink text-ink hover:border-rust hover:text-rust',
   };
 
   const styles = `${baseStyles} ${variants[variant]} ${className}`;

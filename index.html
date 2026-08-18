@@ -3,69 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Olamide Balogun — Applied AI Engineer</title>
-    <meta name="description" content="Olamide (Abdulmujeeb) Balogun — Applied AI Engineer in Lagos, Nigeria. I build and ship production GenAI systems: LLMs, RAG, agentic, and real-time multimodal architectures on Google Cloud." />
+    <title>Olamide Balogun · Applied AI Engineer</title>
+    <meta name="description" content="Olamide (Abdulmujeeb) Balogun, Applied AI Engineer in Lagos, Nigeria. I build and ship production GenAI systems: LLMs, RAG, agentic, and real-time multimodal architectures on Google Cloud." />
 
-    <!-- Fonts: Space Grotesk (headings), Source Sans 3 (body), IBM Plex Mono (labels) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts are self-hosted and declared in src/styles.css.
+         Preload only the two faces needed above the fold: Neco upright
+         (all display and body copy) and Plex Mono (eyebrows, labels).
+         Neco italic and Array are declared but not preloaded, so they
+         cost nothing until something on the page uses them. -->
+    <link rel="preload" href="/fonts/neco-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/images/favicon-2.ico">
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              // Minimal warm-neutral palette with a single teal accent
-              ink: '#1C1917',          // warm near-black (text)
-              paper: '#FAFAF8',        // warm off-white (background)
-              muted: '#57534E',        // warm grey (secondary text)
-              faint: '#A8A29E',        // light warm grey
-              line: '#E7E5E4',         // hairline borders
-              accent: '#0F766E',       // teal-700
-              accentHover: '#115E59',  // teal-800
-              accentSoft: '#F0FDFA',   // teal-50
-              accentBorder: '#99F6E4', // teal-200
-            },
-            fontFamily: {
-              sans: ['"Inter"', 'sans-serif'],
-              heading: ['"Space Grotesk"', 'sans-serif'],
-              mono: ['"IBM Plex Mono"', 'monospace'],
-            },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out',
-              'slide-up': 'slideUp 0.6s ease-out forwards',
-            },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              slideUp: {
-                '0%': { transform: 'translateY(16px)', opacity: '0' },
-                '100%': { transform: 'translateY(0)', opacity: '1' },
-              }
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      html {
-        scroll-behavior: smooth;
-      }
-      body {
-        background-color: #FAFAF8;
-        -webkit-font-smoothing: antialiased;
-        text-rendering: optimizeLegibility;
-      }
-    </style>
-</head>
+    <link rel="icon" type="image/x-icon" href="/images/favicon-2.ico" />
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>

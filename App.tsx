@@ -46,7 +46,7 @@ const ProjectFavicon: React.FC<{ url: string }> = ({ url }) => {
       alt=""
       width={18}
       height={18}
-      className="rounded-sm flex-shrink-0 opacity-80"
+      className="flex-shrink-0 opacity-80"
     />
   );
 };
@@ -59,7 +59,7 @@ const ProjectLink: React.FC<{ href: string; icon: React.ElementType; label: stri
     href={href}
     target="_blank"
     rel="noreferrer"
-    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent transition-colors"
+    className="inline-flex items-center gap-1.5 text-sm text-ink-secondary hover:text-rust transition-colors"
   >
     <Icon size={15} strokeWidth={1.75} />
     <span>{label}</span>
@@ -78,7 +78,7 @@ const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
       {l?.certificate && <ProjectLink href={l.certificate} icon={Award} label="Certificate" />}
       {l?.doi && <ProjectLink href={l.doi} icon={Microscope} label="Journal publication" />}
       {project.privateRepo && (
-        <span className="inline-flex items-center gap-1.5 text-sm text-faint">
+        <span className="inline-flex items-center gap-1.5 text-sm text-ink-secondary">
           <Github size={15} strokeWidth={1.75} />
           <span>Private repo</span>
         </span>
@@ -92,7 +92,7 @@ const Tags: React.FC<{ tags: string[] }> = ({ tags }) => (
     {tags.map((tag) => (
       <span
         key={tag}
-        className="px-2.5 py-1 bg-paper text-muted text-xs font-mono rounded-md border border-line"
+        className="px-2.5 py-1 bg-paper text-ink-secondary type-label border border-rule"
       >
         {tag}
       </span>
@@ -108,45 +108,49 @@ const App: React.FC = () => {
   const productProjects = projects.filter((p) => p.category === 'full-stack');
 
   return (
-    <div className="min-h-screen bg-paper text-ink font-sans selection:bg-accent selection:text-white antialiased">
+    <div className="min-h-screen bg-paper text-ink font-sans antialiased">
 
       {/* --- NAVIGATION --- */}
-      <nav className="fixed top-0 w-full bg-paper/80 backdrop-blur-md border-b border-line z-50">
+      <nav className="fixed top-0 w-full bg-paper border-b border-rule z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <a href="#" className="flex items-center gap-3 group">
-            <img
-              src="/images/pfp.jpg"
-              onError={(e) => { e.currentTarget.src = 'https://picsum.photos/200'; }}
-              alt="Olamide Balogun"
-              className="w-9 h-9 rounded-full object-cover border border-line"
-            />
-            <span className="font-heading font-semibold text-lg tracking-tight">Olamide Balogun</span>
+            <picture>
+              <source srcSet="/images/pfp.webp" type="image/webp" />
+              <img
+                src="/images/pfp.jpg"
+                alt=""
+                width={36}
+                height={36}
+                className="w-9 h-9 object-cover border border-rule"
+              />
+            </picture>
+            <span className="type-display-s">Olamide Balogun</span>
           </a>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-secondary">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-accent transition-colors">
+              <a key={link.href} href={link.href} className="hover:text-rust transition-colors">
                 {link.label}
               </a>
             ))}
             <a
               href="#contact"
-              className="px-4 py-2 rounded-full bg-ink text-white hover:bg-accent transition-colors"
+              className="px-4 py-2 border border-ink text-ink hover:border-rust hover:text-rust transition-colors"
             >
               Contact
             </a>
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={toggleMenu} className="md:hidden text-sm font-medium text-muted">
+          <button onClick={toggleMenu} className="md:hidden text-sm font-medium text-ink-secondary">
             {isMenuOpen ? 'Close' : 'Menu'}
           </button>
         </div>
 
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden bg-paper border-b border-line px-6 py-6 flex flex-col gap-4 shadow-sm animate-fade-in">
+          <div className="md:hidden bg-paper border-b border-rule px-6 py-6 flex flex-col gap-4 animate-fade-in">
             {[...navLinks, { href: '#contact', label: 'Contact' }].map((link) => (
               <a key={link.href} href={link.href} onClick={toggleMenu} className="text-lg">
                 {link.label}
@@ -162,29 +166,33 @@ const App: React.FC = () => {
           {/* Portrait */}
           <div className="hidden md:block">
             <div className="relative w-full max-w-[280px]">
-              <div className="absolute -inset-3 rounded-[2rem] bg-accentSoft border border-accentBorder/60 -z-10 rotate-3" />
-              <img
-                src="/images/me.jpg"
-                onError={(e) => { e.currentTarget.src = 'https://picsum.photos/400'; }}
-                alt="Olamide Balogun"
-                className="w-full aspect-square object-cover rounded-3xl border border-line shadow-sm"
-              />
+              <div className="absolute -inset-3 bg-sand border border-rust/30 -z-10 rotate-3" />
+              <picture>
+                <source srcSet="/images/me.webp" type="image/webp" />
+                <img
+                  src="/images/me.jpg"
+                  alt="Olamide Balogun"
+                  width={560}
+                  height={560}
+                  className="w-full aspect-square object-cover border border-rule"
+                />
+              </picture>
             </div>
           </div>
 
           <div className="animate-slide-up">
-            <div className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
+            <div className="type-label text-rust mb-6 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 bg-rust-mark inline-block" />
               Applied AI Engineer
-              <span className="text-faint inline-flex items-center gap-1 normal-case tracking-normal">
+              <span className="text-ink-secondary inline-flex items-center gap-1 normal-case tracking-normal">
                 <MapPin size={13} strokeWidth={1.75} /> Lagos, Nigeria
               </span>
             </div>
-            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-ink mb-6">
+            <h1 className="type-display-xl text-ink mb-6">
               Olamide Balogun
             </h1>
-            <p className="text-lg md:text-xl text-muted leading-relaxed max-w-xl mb-8">
-              I build and ship production GenAI systems — LLMs, retrieval-augmented generation,
+            <p className="type-lead text-ink-secondary mb-8">
+              I build and ship production GenAI systems: LLMs, retrieval-augmented generation,
               agentic, and real-time multimodal architectures, mostly on Google Cloud. Currently
               moving toward AI research engineering.
             </p>
@@ -192,14 +200,14 @@ const App: React.FC = () => {
               <Button href="#projects">View work</Button>
               <Button variant="outline" href="#contact">Get in touch</Button>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
+            <div className="flex flex-wrap items-center gap-6 text-sm text-ink-secondary">
               {socials.map(({ href, label, icon: Icon }) => (
                 <a
                   key={label}
                   href={href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 hover:text-accent transition-colors"
+                  className="inline-flex items-center gap-2 hover:text-rust transition-colors"
                 >
                   <Icon size={16} strokeWidth={1.75} />
                   <span>{label}</span>
@@ -213,7 +221,7 @@ const App: React.FC = () => {
       {/* --- ABOUT --- */}
       <Section id="about" eyebrow="About" title="Engineer first, researcher in the making.">
         <div className="grid md:grid-cols-3 gap-12">
-          <Reveal className="md:col-span-2 space-y-6 text-lg text-muted leading-relaxed">
+          <Reveal className="md:col-span-2 space-y-6 type-body text-ink-secondary">
             <p>
               I'm Olamide, an Applied AI Engineer based in Lagos, Nigeria. Day to day I build and
               ship production agentic applications, building on large language models, retrieval-augmented
@@ -227,37 +235,37 @@ const App: React.FC = () => {
             <p>
               Longer term, I'm moving toward AI research engineering. Right now I'm{' '}
               <em>currently exploring</em> interests in multilingual and low-resource LLMs,
-              information retrieval, and interpretability — directions, not settled
+              information retrieval, and interpretability. Directions, not settled
               specializations.
             </p>
           </Reveal>
 
           <Reveal delay={120} className="h-fit">
-            <div className="bg-white p-6 rounded-2xl border border-line">
-              <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-5">
+            <div className="bg-sand p-6 border border-rule">
+              <h3 className="type-label text-rust mb-5">
                 Currently exploring
               </h3>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3 text-sm">
-                  <Languages className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <Languages className="w-4 h-4 text-rust mt-0.5 flex-shrink-0" strokeWidth={1.75} />
                   <span>Multilingual &amp; low-resource LLMs</span>
                 </li>
                 <li className="flex items-start gap-3 text-sm">
-                  <Search className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <Search className="w-4 h-4 text-rust mt-0.5 flex-shrink-0" strokeWidth={1.75} />
                   <span>Information retrieval</span>
                 </li>
                 <li className="flex items-start gap-3 text-sm">
-                  <Microscope className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <Microscope className="w-4 h-4 text-rust mt-0.5 flex-shrink-0" strokeWidth={1.75} />
                   <span>Interpretability</span>
                 </li>
               </ul>
-              <div className="mt-6 pt-6 border-t border-line">
-                <div className="font-mono text-xs text-faint uppercase tracking-[0.15em] mb-2">
+              <div className="mt-6 pt-6 border-t border-rule">
+                <div className="type-label text-ink-secondary mb-2">
                   Education
                 </div>
                 <div className="font-medium text-ink">B.Sc Computer Science</div>
-                <div className="text-sm text-muted">Afe Babalola University</div>
-                <div className="text-accent font-semibold text-sm mt-1">4.88 / 5.00 CGPA</div>
+                <div className="text-sm text-ink-secondary">Afe Babalola University</div>
+                <div className="text-rust font-semibold text-sm mt-1">4.88 / 5.00 CGPA</div>
               </div>
             </div>
           </Reveal>
@@ -269,48 +277,48 @@ const App: React.FC = () => {
         id="projects"
         eyebrow="Selected work"
         title="Projects"
-        className="bg-white border-y border-line"
+        className="bg-sand border-y border-rule"
       >
-        {/* Category A — AI / ML Engineering (primary) */}
+        {/* Category A: AI / ML Engineering (primary) */}
         <Reveal className="mb-8">
           <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="font-heading text-2xl text-ink">AI / ML Engineering</h3>
-            <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
+            <h3 className="type-display-m text-ink">AI / ML Engineering</h3>
+            <span className="type-label text-ink-secondary">
               the focus
             </span>
           </div>
-          <p className="text-muted mt-2 max-w-2xl">
-            Production GenAI systems and research — where most of my attention goes.
+          <p className="text-ink-secondary mt-2 max-w-2xl">
+            Production GenAI systems and research, where most of my attention goes.
           </p>
         </Reveal>
 
         <div className="grid md:grid-cols-2 gap-6 mb-20">
           {aiProjects.map((project, i) => (
             <Reveal key={project.id} delay={i * 80}>
-              <article className="group h-full flex flex-col bg-paper p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors">
+              <article className="group h-full flex flex-col bg-paper p-7 border border-rule hover:border-rust/40 transition-colors">
                 <div className="flex items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-2.5">
-                    <h4 className="font-heading text-xl text-ink leading-snug">{project.title}</h4>
+                    <h4 className="type-display-s text-ink">{project.title}</h4>
                   </div>
                   <ArrowUpRight
-                    className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1"
+                    className="text-ink-secondary group-hover:text-rust transition-colors flex-shrink-0 mt-1"
                     size={18}
                   />
                 </div>
 
                 {project.status && (
-                  <div className="inline-flex self-start items-center px-2.5 py-1 mb-4 rounded-full bg-accentSoft border border-accentBorder/60 text-accent text-xs font-medium">
+                  <div className="inline-flex self-start items-center px-2.5 py-1 mb-4 bg-sand border border-rust/30 text-rust text-xs font-medium">
                     {project.status}
                   </div>
                 )}
 
-                <p className="text-muted leading-relaxed mb-5">{project.description}</p>
+                <p className="text-ink-secondary leading-relaxed mb-5">{project.description}</p>
 
                 {project.highlights && (
                   <ul className="space-y-2.5 mb-5">
                     {project.highlights.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-sm text-muted">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
+                      <li key={idx} className="flex items-start gap-2.5 text-sm text-ink-secondary">
+                        <span className="text-rust flex-shrink-0 leading-none mt-1" aria-hidden="true">*</span>
                         <span>{point}</span>
                       </li>
                     ))}
@@ -318,11 +326,11 @@ const App: React.FC = () => {
                 )}
 
                 {project.metrics && (
-                  <div className="grid grid-cols-2 gap-3 mb-5 p-4 rounded-xl bg-white border border-line">
+                  <div className="grid grid-cols-2 gap-3 mb-5 p-4 bg-sand border border-rule">
                     {Object.entries(project.metrics).map(([key, value]) => (
                       <div key={key}>
-                        <span className="block font-mono font-medium text-accent text-lg">{value}</span>
-                        <span className="block text-xs text-faint uppercase tracking-wide mt-0.5">{key}</span>
+                        <span className="block font-mono font-medium text-rust text-lg">{value}</span>
+                        <span className="block text-xs text-ink-secondary uppercase tracking-wide mt-0.5">{key}</span>
                       </div>
                     ))}
                   </div>
@@ -338,15 +346,15 @@ const App: React.FC = () => {
           ))}
         </div>
 
-        {/* Category B — Full-Stack & Product (secondary) */}
+        {/* Category B: Full-Stack & Product (secondary) */}
         <Reveal className="mb-8">
           <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="font-heading text-2xl text-ink">Full-Stack &amp; Product Engineering</h3>
-            <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
+            <h3 className="type-display-m text-ink">Full-Stack &amp; Product Engineering</h3>
+            <span className="type-label text-ink-secondary">
               shipping range
             </span>
           </div>
-          <p className="text-muted mt-2 max-w-2xl">
+          <p className="text-ink-secondary mt-2 max-w-2xl">
             Live, production software shipped for real stakeholders.
           </p>
         </Reveal>
@@ -354,19 +362,19 @@ const App: React.FC = () => {
         <div className="grid md:grid-cols-3 gap-5">
           {productProjects.map((project, i) => (
             <Reveal key={project.id} delay={i * 80}>
-              <article className="group h-full flex flex-col bg-paper p-6 rounded-2xl border border-line hover:border-accent/40 transition-colors">
+              <article className="group h-full flex flex-col bg-paper p-6 border border-rule hover:border-rust/40 transition-colors">
                 <div className="flex items-center justify-between gap-3 mb-3">
                   <div className="flex items-center gap-2">
                     {project.links?.live && <ProjectFavicon url={project.links.live} />}
-                    <h4 className="font-heading text-lg text-ink">{project.title}</h4>
+                    <h4 className="type-display-s text-ink">{project.title}</h4>
                   </div>
                   {project.status && (
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-accent">
+                    <span className="type-label text-rust">
                       {project.status}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-muted leading-relaxed mb-5">{project.description}</p>
+                <p className="text-sm text-ink-secondary leading-relaxed mb-5">{project.description}</p>
                 <div className="mt-auto space-y-4">
                   <Tags tags={project.tags} />
                   <ProjectLinks project={project} />
@@ -391,10 +399,10 @@ const App: React.FC = () => {
                 href={post.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group block bg-white p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors"
+                className="group block bg-sand p-7 border border-rule hover:border-rust/40 transition-colors"
               >
-                <div className="flex items-center gap-3 font-mono text-xs text-faint uppercase tracking-[0.15em] mb-3">
-                  <span className="inline-flex items-center gap-1.5 text-accent">
+                <div className="flex items-center gap-3 type-label text-ink-secondary mb-3">
+                  <span className="inline-flex items-center gap-1.5 text-rust">
                     <BookOpen size={13} strokeWidth={1.75} /> {post.platform}
                   </span>
                   <span>·</span>
@@ -402,11 +410,11 @@ const App: React.FC = () => {
                   <span>·</span>
                   <span>{post.readTime}</span>
                 </div>
-                <h3 className="font-heading text-xl md:text-2xl text-ink leading-snug mb-3 group-hover:text-accent transition-colors flex items-start gap-2">
+                <h3 className="type-display-m text-ink mb-3 group-hover:text-rust transition-colors flex items-start gap-2">
                   <span>{post.title}</span>
-                  <ArrowUpRight className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1.5" size={18} />
+                  <ArrowUpRight className="text-ink-secondary group-hover:text-rust transition-colors flex-shrink-0 mt-1.5" size={18} />
                 </h3>
-                <p className="text-muted leading-relaxed max-w-3xl">{post.excerpt}</p>
+                <p className="text-ink-secondary leading-relaxed max-w-3xl">{post.excerpt}</p>
               </a>
             </Reveal>
           ))}
@@ -418,22 +426,22 @@ const App: React.FC = () => {
         id="experience"
         eyebrow="Experience"
         title="Where I've worked"
-        className="bg-white border-y border-line"
+        className="bg-sand border-y border-rule"
       >
-        <div className="relative border-l border-line ml-3 md:ml-4 space-y-12">
+        <div className="relative border-l border-rule ml-3 md:ml-4 space-y-12">
           {experience.map((job, index) => (
             <Reveal key={job.id} delay={index * 60}>
               <div className="relative pl-8 md:pl-10">
-                <div className="absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full bg-accent ring-4 ring-white" />
+                <div className="absolute -left-[4px] top-2.5 w-[7px] h-[7px] bg-rust-mark" />
                 <div className="flex flex-col md:flex-row md:items-baseline gap-x-2 gap-y-1 mb-1">
                   <h3 className="text-lg font-semibold text-ink">{job.role}</h3>
-                  <span className="text-accent font-medium">@ {job.company}</span>
+                  <span className="text-rust font-medium">@ {job.company}</span>
                 </div>
-                <div className="font-mono text-xs text-faint mb-4">{job.period}</div>
+                <div className="font-mono text-xs text-ink-secondary mb-4">{job.period}</div>
                 <ul className="space-y-2">
                   {job.description.map((point, i) => (
-                    <li key={i} className="text-muted flex items-start gap-2.5 text-sm md:text-base">
-                      <span className="mt-2 w-1.5 h-1.5 rounded-full bg-line flex-shrink-0" />
+                    <li key={i} className="text-ink-secondary flex items-start gap-2.5 text-sm md:text-base">
+                      <span className="text-rust flex-shrink-0 leading-none mt-1.5" aria-hidden="true">*</span>
                       <span>{point}</span>
                     </li>
                   ))}
@@ -445,35 +453,35 @@ const App: React.FC = () => {
       </Section>
 
       {/* --- CONTACT / FOOTER --- */}
-      <footer id="contact" className="bg-ink text-stone-300 py-24 px-6 scroll-mt-20">
+      <footer id="contact" className="on-dark bg-void text-cream-secondary py-24 px-6 scroll-mt-20">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="font-mono text-xs uppercase tracking-[0.2em] text-accentBorder mb-6">
+          <div className="type-label text-rust-light mb-6">
             Get in touch
           </div>
-          <h2 className="font-heading text-4xl md:text-5xl text-white mb-6 tracking-tight">
+          <h2 className="type-display-l text-cream mb-6">
             Let's build something reliable.
           </h2>
-          <p className="mb-12 text-lg max-w-2xl mx-auto text-stone-400 leading-relaxed">
-            I'm always happy to talk about applied AI, GenAI systems, or research collaboration —
-            reach out and let's compare notes.
+          <p className="mb-12 text-lg max-w-2xl mx-auto text-cream-secondary leading-relaxed">
+            I'm always happy to talk about applied AI, GenAI systems, or research
+            collaboration. Reach out and let's compare notes.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-16">
-            <a href="mailto:olamidebalogun174@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+            <a href="mailto:olamidebalogun174@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
               <Mail size={17} /> olamidebalogun174@gmail.com
             </a>
-            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
               <Github size={17} /> GitHub
             </a>
-            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
               <Linkedin size={17} /> LinkedIn
             </a>
-            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
               <ExternalLink size={17} /> Hugging Face
             </a>
           </div>
 
-          <div className="text-sm text-stone-500 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3">
+          <div className="text-sm text-cream-secondary pt-8 border-t border-rule-dark flex flex-col md:flex-row justify-between items-center gap-3">
             <p>© {new Date().getFullYear()} Olamide Balogun. Built with React &amp; Tailwind.</p>
             <p className="font-mono text-xs">Lagos, Nigeria</p>
           </div>
