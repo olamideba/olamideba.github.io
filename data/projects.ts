@@ -1,8 +1,7 @@
 import { Project } from '../types';
 
-// Projects are split into two clearly-ranked tiers:
-//   A. AI / ML Engineering  (category: 'ai-ml')      — the focus, fuller cards
-//   B. Full-Stack & Product (category: 'full-stack') — shipping range, tighter cards
+// Three projects are deliberately expanded into stories. The rest remain
+// concise entries so the work is indexed without implying equal depth.
 export const projects: Project[] = [
   // ── Category A — AI / ML Engineering ────────────────────────────────────
   {
@@ -12,6 +11,12 @@ export const projects: Project[] = [
       "An agent society adopting the Multi Agent Debate Framework to help professors, faculty members, and research labs filter out the noise in student outreach emails.",
     category: "ai-ml",
     status: "Qwen Cloud Global AI Hackathon · 2026",
+    featured: true,
+    narrative: {
+      challenge: "Faculty inboxes need a way to separate serious outreach from spam without silently losing a candidate who deserves review.",
+      built: "A Gatekeeper routes uncertain cases to a reviewable queue, then five agents debate each candidate over a shared transcript. The final verdict includes receipts from the professor's publications, and no email sends without human approval.",
+      learned: "An agentic workflow needs an audit trail. A verdict is more useful when a professor can replay the reasoning and decide what happens next.",
+    },
     highlights: [
       "Gatekeeper filters spam before it costs a debate; rejections go to a reviewable queue",
       "Five agents debate each candidate over a shared transcript, ending in an Arbitrator's verdict.",
@@ -31,9 +36,16 @@ export const projects: Project[] = [
     id: "grad-paddy",
     title: "Grad Paddy",
     description:
-      "An AI agent that helps prospective grad students discover programs and navigate applications — built as a session-aware, multi-agent system with human-in-the-loop checkpoints.",
+      "An AI agent that helps prospective grad students discover programs and navigate applications, built as a session-aware multi-agent system with human-in-the-loop checkpoints.",
     category: "ai-ml",
     status: "Google Cloud Rapid Agent Hackathon · 2026",
+    featured: true,
+    availability: "Currently being productionized for consumer usage at gradpaddy.com.",
+    narrative: {
+      challenge: "Graduate-school guidance has to keep a student's context intact while making program recommendations they can inspect and act on.",
+      built: "A session-aware multi-agent system with a PersistentChatAgent wrapper, human-in-the-loop checkpoints, Elastic MCP program search, and a FastAPI and Next.js application stack.",
+      learned: "Durable sessions and explicit checkpoints make an agent easier to trust when the decision has real consequences for the person using it.",
+    },
     highlights: [
       "Session-aware multi-agent architecture with a custom PersistentChatAgent wrapper for durable chat sessions.",
       "Human-in-the-loop checkpoints and Elastic MCP tools for grounded program search.",
@@ -42,7 +54,7 @@ export const projects: Project[] = [
     tags: ["Google ADK", "Gemini", "FastAPI", "Firestore", "Next.js 14", "Multi-agent", "MCP"],
     links: {
       github: "https://github.com/olamideba/grad-paddy",
-      live: "https://grad-paddy-frontend-1001846806436.us-central1.run.app/",
+      live: "https://gradpaddy.com",
       devpost: "https://devpost.com/software/grad-paddy",
       video: "https://youtu.be/Je6jsfGuVA4",
     },
@@ -54,6 +66,12 @@ export const projects: Project[] = [
       "A real-time, voice-and-vision AI tutor that scores and surfaces a student's 'flow state' live during a session.",
     category: "ai-ml",
     status: "Gemini Live Agent Hackathon · 2026",
+    featured: true,
+    narrative: {
+      challenge: "A real-time tutor is only useful when its voice and vision session survives the messy parts of a live connection.",
+      built: "A Gemini Live API tutor on FastAPI and Cloud Run, with WebSocket streaming, structured error envelopes, and a dismissible recovery banner.",
+      learned: "Realtime reliability is state management: reconnects, audio ownership, and session hydration are product behavior, not edge cases.",
+    },
     highlights: [
       "Built on the Gemini Live API with WebSocket streaming over FastAPI and Cloud Run.",
       "Hardened the realtime layer: fixed reconnection race conditions, audio duplication, and stale session hydration.",
@@ -68,14 +86,14 @@ export const projects: Project[] = [
   },
   {
     id: "tiny-aya",
-    title: "Tiny Aya Expedition — Cohere Labs",
+    title: "Tiny Aya Expedition: Cohere Labs",
     description:
       "Multilingual LLM safety research probing how romanized, low-resource scripts affect model robustness under adversarial prompting.",
     category: "ai-ml",
     status: "Research · Cohere Labs",
     highlights: [
       "Studied adversarial prompting in romanized multilingual scripts and its effect on model robustness.",
-      "Direct signal toward my interest in multilingual, low-resource LLMs — research-oriented rather than a deployed product.",
+      "Direct signal toward my interest in multilingual, low-resource LLMs; research-oriented rather than a deployed product.",
     ],
     tags: ["LLM Safety", "Multilingual", "Adversarial Prompting", "Research"],
     links: {
@@ -90,6 +108,12 @@ export const projects: Project[] = [
       "A retrieval-augmented system that answers scholarly-research queries over academic sources, built to reduce hallucination in academic settings. My undergraduate final-year project and first research manuscript.",
     category: "ai-ml",
     status: "Published · NIJOTECH",
+    featured: true,
+    narrative: {
+      challenge: "Academic answers need evidence, not plausible language. The hard part was making retrieval quality visible and measurable.",
+      built: "Fine-tuned BAAI/bge-large embeddings over the ACL Anthology and used vector retrieval to ground scholarly answers.",
+      learned: "Retrieval needs its own evaluation. Measuring the retrieval layer made the improvement against baseline LLM answers concrete.",
+    },
     highlights: [
       "Fine-tuned BAAI/bge-large embeddings over the ACL Anthology with vector-based retrieval.",
       "97% retrieval accuracy and a 15% reduction in hallucination versus baseline LLM responses.",
@@ -111,7 +135,7 @@ export const projects: Project[] = [
     id: "nexr",
     title: "NexR",
     description:
-      'Backend for a unified social media analytics platform — "The Forbes of Social Media." I designed and built the API and data layer: modular FastAPI monolith, PostgreSQL, Redis caching, transactional email via Mailgun, and file storage through Supabase. (Frontend handled separately by a dedicated engineer.)',
+      'Backend for a unified social media analytics platform, "The Forbes of Social Media." I designed and built the API and data layer: modular FastAPI monolith, PostgreSQL, Redis caching, transactional email via Mailgun, and file storage through Supabase. (Frontend handled separately by a dedicated engineer.)',
     category: "full-stack",
     status: "Live",
     tags: ["FastAPI", "PostgreSQL", "Redis", "Mailgun", "Supabase", "Render", "Python"],
@@ -124,7 +148,7 @@ export const projects: Project[] = [
     id: "andus",
     title: "Andus D'Great Schools",
     description:
-      "A public-facing site for a private school (kindergarten–secondary) in Ikorodu, Lagos — a real, deployed client project, and my alma mater.",
+      "A public-facing site for a private school, kindergarten through secondary, in Ikorodu, Lagos; a real deployed client project and my alma mater.",
     category: "full-stack",
     status: "Live",
     tags: ["React", "TypeScript"],

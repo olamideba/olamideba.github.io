@@ -1,0 +1,42 @@
+---
+import { projects } from '../../../data/projects';
+import '../../styles.css';
+
+export function getStaticPaths() {
+  return projects
+    .filter((project) => project.featured)
+    .map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{project.title} preview</title>
+  </head>
+  <body class="og-canvas">
+    <main class="og-card">
+      <img class="og-engraving" src="/images/flammarion-engraving.webp" alt="" />
+      <p class="type-label og-label">Olamide Balogun / selected work</p>
+      <h1>{project.title}</h1>
+      <p class="og-description">{project.description}</p>
+      <p class="type-label og-status">{project.status}</p>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  .og-canvas { width: 1200px; height: 630px; overflow: hidden; background: #131a24; }
+  .og-card { position: relative; width: 1200px; height: 630px; overflow: hidden; padding: 74px 86px; background: #131a24; color: #ede7db; }
+  .og-card::before { content: ''; position: absolute; inset: 0; opacity: 0.28; background-image: url('/images/night-sky-hdri.webp'); background-size: cover; }
+  .og-card > * { position: relative; z-index: 1; }
+  .og-engraving { position: absolute; right: -30px; bottom: -80px; z-index: 0; width: 510px; opacity: 0.38; mix-blend-mode: screen; filter: invert(1) contrast(1.2); }
+  .og-label, .og-status { color: #d97a4e; }
+  .og-card h1 { width: 660px; margin: 36px 0 28px; font-family: "Neco", Georgia, serif; font-size: 74px; font-weight: 500; line-height: 0.98; }
+  .og-description { width: 630px; font-family: "Neco", Georgia, serif; font-size: 25px; line-height: 1.4; color: #ede7db; }
+  .og-status { position: absolute; left: 86px; bottom: 70px; }
+</style>

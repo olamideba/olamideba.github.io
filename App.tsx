@@ -1,55 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Mail, Github, Linkedin, ExternalLink, Play, Award, Trophy,
+  Mail, Code, ExternalLink, Play, Award, Trophy,
   ArrowUpRight, BookOpen, Languages, Search, Microscope, MapPin,
-} from 'lucide-react';
+} from '@sketchyicons/react';
 
-import { Button } from './components/Button';
 import { Section } from './components/Section';
 import { Reveal } from './components/Reveal';
+import { HeroParticles } from './components/HeroParticles';
 
 import { projects } from './data/projects';
 import { experience } from './data/experience';
+import { now } from './data/now';
 import { posts } from './data/posts';
 import { Project } from './types';
 
 const navLinks = [
   { href: '#about', label: 'About' },
-  { href: '#projects', label: 'Projects' },
-  { href: '#writing', label: 'Writing' },
+  { href: '#projects', label: 'Work' },
+  { href: '#writing', label: 'Notes' },
   { href: '#experience', label: 'Experience' },
+  { href: '#now', label: 'Now' },
+  { href: '#contact', label: 'Elsewhere' },
 ];
-
-const socials = [
-  { href: 'https://github.com/olamideba', label: 'GitHub', icon: Github },
-  { href: 'https://www.linkedin.com/in/olamideba/', label: 'LinkedIn', icon: Linkedin },
-  { href: 'https://huggingface.co/olamideba', label: 'Hugging Face', icon: ExternalLink },
-];
-
-// Extracts the root domain from a URL for use with the favicon service.
-function faviconUrl(siteUrl: string): string {
-  try {
-    const { hostname } = new URL(siteUrl);
-    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
-  } catch {
-    return '';
-  }
-}
-
-// Favicon displayed next to a project title when a live URL is available.
-const ProjectFavicon: React.FC<{ url: string }> = ({ url }) => {
-  const src = faviconUrl(url);
-  if (!src) return null;
-  return (
-    <img
-      src={src}
-      alt=""
-      width={18}
-      height={18}
-      className="rounded-sm flex-shrink-0 opacity-80"
-    />
-  );
-};
 
 // Small labelled link used inside project cards.
 const ProjectLink: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({
@@ -59,7 +31,7 @@ const ProjectLink: React.FC<{ href: string; icon: React.ElementType; label: stri
     href={href}
     target="_blank"
     rel="noreferrer"
-    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-accent transition-colors"
+    className="inline-flex items-center gap-1.5 text-sm text-ink-secondary hover:text-rust transition-colors"
   >
     <Icon size={15} strokeWidth={1.75} />
     <span>{label}</span>
@@ -71,15 +43,21 @@ const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
   if (!l && !project.privateRepo) return null;
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-      {l?.github && <ProjectLink href={l.github} icon={Github} label="Code" />}
+      {project.featured && (
+        <a href={`/projects/${project.id}/`} className="inline-flex items-center gap-1.5 text-sm text-ink-secondary transition-colors hover:text-rust">
+          <BookOpen size={15} strokeWidth={1.75} />
+          <span>Project story</span>
+        </a>
+      )}
+      {l?.github && <ProjectLink href={l.github} icon={Code} label="Code" />}
       {l?.live && <ProjectLink href={l.live} icon={ExternalLink} label="Live demo" />}
       {l?.video && <ProjectLink href={l.video} icon={Play} label="Demo video" />}
       {l?.devpost && <ProjectLink href={l.devpost} icon={Trophy} label="Devpost" />}
       {l?.certificate && <ProjectLink href={l.certificate} icon={Award} label="Certificate" />}
       {l?.doi && <ProjectLink href={l.doi} icon={Microscope} label="Journal publication" />}
       {project.privateRepo && (
-        <span className="inline-flex items-center gap-1.5 text-sm text-faint">
-          <Github size={15} strokeWidth={1.75} />
+        <span className="inline-flex items-center gap-1.5 text-sm text-ink-secondary">
+          <Code size={15} strokeWidth={1.75} />
           <span>Private repo</span>
         </span>
       )}
@@ -92,7 +70,7 @@ const Tags: React.FC<{ tags: string[] }> = ({ tags }) => (
     {tags.map((tag) => (
       <span
         key={tag}
-        className="px-2.5 py-1 bg-paper text-muted text-xs font-mono rounded-md border border-line"
+        className="px-2.5 py-1 bg-paper text-ink-secondary type-label border border-rule"
       >
         {tag}
       </span>
@@ -102,118 +80,145 @@ const Tags: React.FC<{ tags: string[] }> = ({ tags }) => (
 
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('#about');
+  const [heroHasPassed, setHeroHasPassed] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const aiProjects = projects.filter((p) => p.category === 'ai-ml');
-  const productProjects = projects.filter((p) => p.category === 'full-stack');
+  const featuredProjects = projects.filter((project) => project.featured);
+  const otherProjects = projects.filter((project) => !project.featured);
+
+  useEffect(() => {
+    const sections = navLinks
+      .map(({ href }) => document.querySelector<HTMLElement>(href))
+      .filter((section): section is HTMLElement => section !== null);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(`#${visible.target.id}`);
+      },
+      { rootMargin: '-18% 0px -62% 0px', threshold: [0.1, 0.35, 0.6] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const hero = document.querySelector('header');
+    if (!hero) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroHasPassed(!entry.isIntersecting),
+      { rootMargin: '0px 0px -90% 0px', threshold: 0 },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-paper text-ink font-sans selection:bg-accent selection:text-white antialiased">
+    <div className="min-h-screen bg-paper text-ink font-sans antialiased">
 
-      {/* --- NAVIGATION --- */}
-      <nav className="fixed top-0 w-full bg-paper/80 backdrop-blur-md border-b border-line z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <a href="#" className="flex items-center gap-3 group">
-            <img
-              src="/images/pfp.jpg"
-              onError={(e) => { e.currentTarget.src = 'https://picsum.photos/200'; }}
-              alt="Olamide Balogun"
-              className="w-9 h-9 rounded-full object-cover border border-line"
-            />
-            <span className="font-heading font-semibold text-lg tracking-tight">Olamide Balogun</span>
+      {/* --- HERO --- */}
+      <header className="hero-sky on-dark relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-midnight px-6 py-6 md:px-10 lg:px-16">
+        <HeroParticles />
+
+        <nav className="relative z-20 flex w-full items-start justify-between" aria-label="Primary navigation">
+          <a href="#top" className="type-monogram text-cream transition-opacity hover:opacity-70" aria-label="Back to top">
+            @olamideba
           </a>
-
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+          <div className="hidden text-right type-label text-cream-secondary md:flex md:flex-col md:items-end md:gap-2">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-accent transition-colors">
+              <a key={link.href} href={link.href} className="nav-link-hover transition-colors hover:text-rust-light">
                 {link.label}
               </a>
             ))}
-            <a
-              href="#contact"
-              className="px-4 py-2 rounded-full bg-ink text-white hover:bg-accent transition-colors"
-            >
-              Contact
-            </a>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button onClick={toggleMenu} className="md:hidden text-sm font-medium text-muted">
+          <button
+            type="button"
+            onClick={toggleMenu}
+            className="type-label text-cream-secondary transition-colors hover:text-rust-light md:hidden"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
             {isMenuOpen ? 'Close' : 'Menu'}
           </button>
-        </div>
+        </nav>
 
-        {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden bg-paper border-b border-line px-6 py-6 flex flex-col gap-4 shadow-sm animate-fade-in">
-            {[...navLinks, { href: '#contact', label: 'Contact' }].map((link) => (
-              <a key={link.href} href={link.href} onClick={toggleMenu} className="text-lg">
+          <div id="mobile-menu" className="absolute right-6 top-22 z-30 flex min-w-36 flex-col gap-3 border border-rule-dark bg-midnight p-5 text-right type-label text-cream-secondary md:hidden">
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} onClick={toggleMenu} className="hover:text-rust-light">
                 {link.label}
               </a>
             ))}
           </div>
         )}
-      </nav>
 
-      {/* --- HERO --- */}
-      <header className="relative pt-36 pb-24 px-6 md:px-10 lg:px-16 overflow-hidden">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr_1.5fr] gap-12 items-center">
-          {/* Portrait */}
-          <div className="hidden md:block">
-            <div className="relative w-full max-w-[280px]">
-              <div className="absolute -inset-3 rounded-[2rem] bg-accentSoft border border-accentBorder/60 -z-10 rotate-3" />
-              <img
-                src="/images/me.jpg"
-                onError={(e) => { e.currentTarget.src = 'https://picsum.photos/400'; }}
-                alt="Olamide Balogun"
-                className="w-full aspect-square object-cover rounded-3xl border border-line shadow-sm"
-              />
-            </div>
-          </div>
+        <div className="edge-label edge-label-left hidden md:block">6.5244° N, 3.3792° E</div>
+        <div className="edge-label edge-label-right hidden md:block">v0.2 / 2026</div>
 
-          <div className="animate-slide-up">
-            <div className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block" />
-              Applied AI Engineer
-              <span className="text-faint inline-flex items-center gap-1 normal-case tracking-normal">
+        <div id="top" className="relative z-10 mx-auto flex w-full max-w-6xl items-center py-28 md:py-24">
+          <div className="grid w-full border border-rule-dark md:grid-cols-[1.22fr_1fr]">
+            <div className="bg-paper p-7 sm:p-10 lg:p-14">
+              <p className="type-label mb-8 text-rust">Applied AI Engineer</p>
+              <h1 className="type-display-xl mb-8 max-w-[10ch] text-ink">
+                I build things, learn difficult stuff, and explore better ways to <em className="text-rust">{'{think}'}</em>.
+              </h1>
+              <p className="type-lead mb-10 text-ink-secondary">
+                I build production systems around agents, retrieval, and multimodal AI, while moving toward research engineering.
+              </p>
+              <div className="flex flex-wrap gap-x-7 gap-y-3 type-small">
+                <a href="#projects" className="text-link-rule text-ink hover:text-rust">View work</a>
+                <a href="#contact" className="text-link-rule text-ink hover:text-rust">Get in touch</a>
+              </div>
+              <p className="mt-12 inline-flex items-center gap-2 type-label text-ink-secondary">
                 <MapPin size={13} strokeWidth={1.75} /> Lagos, Nigeria
-              </span>
+              </p>
             </div>
-            <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-ink mb-6">
-              Olamide Balogun
-            </h1>
-            <p className="text-lg md:text-xl text-muted leading-relaxed max-w-xl mb-8">
-              I build and ship production GenAI systems — LLMs, retrieval-augmented generation,
-              agentic, and real-time multimodal architectures, mostly on Google Cloud. Currently
-              moving toward AI research engineering.
-            </p>
-            <div className="flex flex-wrap items-center gap-3 mb-10">
-              <Button href="#projects">View work</Button>
-              <Button variant="outline" href="#contact">Get in touch</Button>
-            </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-muted">
-              {socials.map(({ href, label, icon: Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 hover:text-accent transition-colors"
-                >
-                  <Icon size={16} strokeWidth={1.75} />
-                  <span>{label}</span>
-                </a>
-              ))}
+
+            <div className="hero-diagram relative flex min-h-[28rem] flex-col justify-between overflow-hidden border-t border-rule-dark p-7 sm:p-10 md:border-l md:border-t-0 lg:p-12">
+              <picture className="hero-engraving">
+                <source srcSet="/images/flammarion-engraving.webp" type="image/webp" />
+                <img
+                  src="/images/flammarion-engraving.jpg"
+                  alt="Flammarion's 1888 engraving of a traveller looking beyond the starry sky"
+                  width={720}
+                  height={603}
+                />
+              </picture>
+              <div className="orbit-diagram relative mx-auto h-56 w-56" aria-label="Think, Learn, Build">
+                <span className="orbit orbit-one" /><span className="orbit orbit-two" /><span className="orbit orbit-three" />
+                <span className="orbit-body orbit-body-one" /><span className="orbit-body orbit-body-two" /><span className="orbit-body orbit-body-three" />
+                <span className="orbit-label orbit-label-think">Think</span>
+                <span className="orbit-label orbit-label-learn">Learn</span>
+                <span className="orbit-label orbit-label-build">Build</span>
+              </div>
+              <div className="relative z-10 flex flex-wrap gap-x-3 gap-y-2 type-label text-cream-secondary">
+                <span>{'{agents}'}</span><span>{'{retrieval}'}</span><span>{'{research}'}</span>
+              </div>
+              <span className="hero-disc" aria-hidden="true" />
             </div>
           </div>
         </div>
       </header>
 
+      {heroHasPassed && (
+        <aside className="section-index hidden lg:block" aria-label="Section index">
+          {navLinks.map((link) => (
+            <a key={link.href} href={link.href} className={activeSection === link.href ? 'is-active' : ''}>
+              <span aria-hidden="true">*</span>{link.label}
+            </a>
+          ))}
+        </aside>
+      )}
+
       {/* --- ABOUT --- */}
       <Section id="about" eyebrow="About" title="Engineer first, researcher in the making.">
         <div className="grid md:grid-cols-3 gap-12">
-          <Reveal className="md:col-span-2 space-y-6 text-lg text-muted leading-relaxed">
+          <Reveal className="md:col-span-2 space-y-6 type-body text-ink-secondary">
             <p>
               I'm Olamide, an Applied AI Engineer based in Lagos, Nigeria. Day to day I build and
               ship production agentic applications, building on large language models, retrieval-augmented
@@ -227,37 +232,48 @@ const App: React.FC = () => {
             <p>
               Longer term, I'm moving toward AI research engineering. Right now I'm{' '}
               <em>currently exploring</em> interests in multilingual and low-resource LLMs,
-              information retrieval, and interpretability — directions, not settled
+              information retrieval, and interpretability. Directions, not settled
               specializations.
             </p>
           </Reveal>
 
-          <Reveal delay={120} className="h-fit">
-            <div className="bg-white p-6 rounded-2xl border border-line">
-              <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-accent mb-5">
+          <Reveal delay={120} className="h-fit space-y-8">
+            <picture className="block border border-rule bg-sand p-3">
+              <source srcSet="/images/me.webp" type="image/webp" />
+              <img
+                src="/images/me.jpg"
+                alt="Olamide Balogun"
+                width={560}
+                height={560}
+                className="aspect-square w-full object-cover"
+                loading="lazy"
+              />
+            </picture>
+            <div className="bg-sand p-6 border border-rule">
+              <h3 className="type-label text-rust mb-5">
                 Currently exploring
               </h3>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3 text-sm">
-                  <Languages className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <Languages className="w-4 h-4 text-rust mt-0.5 flex-shrink-0" strokeWidth={1.75} />
                   <span>Multilingual &amp; low-resource LLMs</span>
                 </li>
                 <li className="flex items-start gap-3 text-sm">
-                  <Search className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <Search className="w-4 h-4 text-rust mt-0.5 flex-shrink-0" strokeWidth={1.75} />
                   <span>Information retrieval</span>
                 </li>
                 <li className="flex items-start gap-3 text-sm">
-                  <Microscope className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <Microscope className="w-4 h-4 text-rust mt-0.5 flex-shrink-0" strokeWidth={1.75} />
                   <span>Interpretability</span>
                 </li>
               </ul>
-              <div className="mt-6 pt-6 border-t border-line">
-                <div className="font-mono text-xs text-faint uppercase tracking-[0.15em] mb-2">
+              <div className="mt-6 pt-6 border-t border-rule">
+                <div className="type-label text-ink-secondary mb-2">
                   Education
                 </div>
                 <div className="font-medium text-ink">B.Sc Computer Science</div>
-                <div className="text-sm text-muted">Afe Babalola University</div>
-                <div className="text-accent font-semibold text-sm mt-1">4.88 / 5.00 CGPA</div>
+                <div className="text-sm text-ink-secondary">Afe Babalola University</div>
+                <div className="text-rust font-semibold text-sm mt-1">4.88 / 5.00 CGPA</div>
               </div>
             </div>
           </Reveal>
@@ -269,132 +285,102 @@ const App: React.FC = () => {
         id="projects"
         eyebrow="Selected work"
         title="Projects"
-        className="bg-white border-y border-line"
+        className="bg-sand border-y border-rule"
       >
-        {/* Category A — AI / ML Engineering (primary) */}
-        <Reveal className="mb-8">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="font-heading text-2xl text-ink">AI / ML Engineering</h3>
-            <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
-              the focus
-            </span>
-          </div>
-          <p className="text-muted mt-2 max-w-2xl">
-            Production GenAI systems and research — where most of my attention goes.
-          </p>
-        </Reveal>
-
-        <div className="grid md:grid-cols-2 gap-6 mb-20">
-          {aiProjects.map((project, i) => (
-            <Reveal key={project.id} delay={i * 80}>
-              <article className="group h-full flex flex-col bg-paper p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors">
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <h4 className="font-heading text-xl text-ink leading-snug">{project.title}</h4>
-                  </div>
-                  <ArrowUpRight
-                    className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1"
-                    size={18}
-                  />
-                </div>
-
-                {project.status && (
-                  <div className="inline-flex self-start items-center px-2.5 py-1 mb-4 rounded-full bg-accentSoft border border-accentBorder/60 text-accent text-xs font-medium">
-                    {project.status}
-                  </div>
-                )}
-
-                <p className="text-muted leading-relaxed mb-5">{project.description}</p>
-
-                {project.highlights && (
-                  <ul className="space-y-2.5 mb-5">
-                    {project.highlights.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-sm text-muted">
-                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {project.metrics && (
-                  <div className="grid grid-cols-2 gap-3 mb-5 p-4 rounded-xl bg-white border border-line">
-                    {Object.entries(project.metrics).map(([key, value]) => (
-                      <div key={key}>
-                        <span className="block font-mono font-medium text-accent text-lg">{value}</span>
-                        <span className="block text-xs text-faint uppercase tracking-wide mt-0.5">{key}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* push footer to bottom */}
-                <div className="mt-auto pt-5 space-y-4">
-                  <Tags tags={project.tags} />
-                  <ProjectLinks project={project} />
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-
-        {/* Category B — Full-Stack & Product (secondary) */}
-        <Reveal className="mb-8">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="font-heading text-2xl text-ink">Full-Stack &amp; Product Engineering</h3>
-            <span className="font-mono text-xs uppercase tracking-[0.15em] text-faint">
-              shipping range
-            </span>
-          </div>
-          <p className="text-muted mt-2 max-w-2xl">
-            Live, production software shipped for real stakeholders.
-          </p>
-        </Reveal>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {productProjects.map((project, i) => (
-            <Reveal key={project.id} delay={i * 80}>
-              <article className="group h-full flex flex-col bg-paper p-6 rounded-2xl border border-line hover:border-accent/40 transition-colors">
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    {project.links?.live && <ProjectFavicon url={project.links.live} />}
-                    <h4 className="font-heading text-lg text-ink">{project.title}</h4>
-                  </div>
-                  {project.status && (
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-accent">
-                      {project.status}
-                    </span>
+        <div className="border-t border-rule">
+          {featuredProjects.map((project, index) => (
+            <Reveal key={project.id}>
+              <article className="grid gap-8 border-b border-rule py-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14">
+                <div>
+                  <p className="type-label mb-4 text-rust">0{index + 1} / {project.status}</p>
+                  <h3 className="type-display-l mb-5 text-ink">{project.title}</h3>
+                  <p className="type-body text-ink-secondary">{project.description}</p>
+                  {project.availability && (
+                    <p className="mt-5 border-l-2 border-rust pl-4 text-sm leading-relaxed text-ink-secondary">
+                      {project.availability}
+                    </p>
                   )}
+                  <div className="mt-7">
+                    <ProjectLinks project={project} />
+                  </div>
                 </div>
-                <p className="text-sm text-muted leading-relaxed mb-5">{project.description}</p>
-                <div className="mt-auto space-y-4">
-                  <Tags tags={project.tags} />
-                  <ProjectLinks project={project} />
-                </div>
+
+                {project.narrative && (
+                  <div className="space-y-7">
+                    <div className="border-t border-rule pt-4">
+                      <p className="type-label mb-2 text-rust">What was hard</p>
+                      <p className="type-body text-ink-secondary">{project.narrative.challenge}</p>
+                    </div>
+                    <div className="border-t border-rule pt-4">
+                      <p className="type-label mb-2 text-rust">What I built</p>
+                      <p className="type-body text-ink-secondary">{project.narrative.built}</p>
+                    </div>
+                    <div className="border-t border-rule pt-4">
+                      <p className="type-label mb-2 text-rust">What I learned</p>
+                      <p className="type-body text-ink-secondary">{project.narrative.learned}</p>
+                    </div>
+                    {project.metrics && (
+                      <div className="flex flex-wrap gap-x-8 gap-y-4 border-t border-rule pt-4">
+                        {Object.entries(project.metrics).map(([key, value]) => (
+                          <div key={key}>
+                            <span className="block font-mono text-lg text-rust">{value}</span>
+                            <span className="type-label text-ink-secondary">{key}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <Tags tags={project.tags} />
+                  </div>
+                )}
               </article>
             </Reveal>
           ))}
         </div>
+
+        <Reveal className="mt-16">
+          <p className="type-label mb-4 text-rust">Other work</p>
+          <ol className="border-t border-rule">
+            {otherProjects.map((project, index) => (
+              <li key={project.id} className="grid gap-4 border-b border-rule py-6 md:grid-cols-[3rem_minmax(0,1fr)_auto] md:gap-6">
+                <span className="font-mono text-sm text-ink-secondary">0{index + 5}</span>
+                <div>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h3 className="type-display-s text-ink">{project.title}</h3>
+                    {project.status && <span className="type-label text-rust">{project.status}</span>}
+                  </div>
+                  <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">{project.description}</p>
+                </div>
+                <div className="md:justify-self-end">
+                  <ProjectLinks project={project} />
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Reveal>
       </Section>
 
       {/* --- WRITING --- */}
       <Section
         id="writing"
-        eyebrow="Writing"
+        eyebrow="Thinking"
         title="Notes from the build"
-        subtitle="Engineering write-ups on what I'm shipping and learning. More to come."
+        subtitle="Engineering notes from systems that had to work beyond the demo."
       >
-        <div className="space-y-4">
+        <div className="thinking-field">
+          <picture className="thinking-engraving" aria-hidden="true">
+            <source srcSet="/images/flammarion-engraving.webp" type="image/webp" />
+            <img src="/images/flammarion-engraving.jpg" alt="" width={720} height={603} />
+          </picture>
           {posts.map((post, i) => (
             <Reveal key={post.id} delay={i * 80}>
               <a
                 href={post.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group block bg-white p-7 rounded-2xl border border-line hover:border-accent/40 transition-colors"
+                className="relative z-10 group block border-b border-rule py-9 transition-colors hover:border-rust"
               >
-                <div className="flex items-center gap-3 font-mono text-xs text-faint uppercase tracking-[0.15em] mb-3">
-                  <span className="inline-flex items-center gap-1.5 text-accent">
+                <div className="flex items-center gap-3 type-label text-ink-secondary mb-3">
+                  <span className="inline-flex items-center gap-1.5 text-rust">
                     <BookOpen size={13} strokeWidth={1.75} /> {post.platform}
                   </span>
                   <span>·</span>
@@ -402,11 +388,11 @@ const App: React.FC = () => {
                   <span>·</span>
                   <span>{post.readTime}</span>
                 </div>
-                <h3 className="font-heading text-xl md:text-2xl text-ink leading-snug mb-3 group-hover:text-accent transition-colors flex items-start gap-2">
+                <h3 className="type-display-m text-ink mb-3 group-hover:text-rust transition-colors flex items-start gap-2">
                   <span>{post.title}</span>
-                  <ArrowUpRight className="text-faint group-hover:text-accent transition-colors flex-shrink-0 mt-1.5" size={18} />
+                  <ArrowUpRight className="text-ink-secondary group-hover:text-rust transition-colors flex-shrink-0 mt-1.5" size={18} />
                 </h3>
-                <p className="text-muted leading-relaxed max-w-3xl">{post.excerpt}</p>
+                <p className="type-body text-ink-secondary">{post.excerpt}</p>
               </a>
             </Reveal>
           ))}
@@ -418,22 +404,22 @@ const App: React.FC = () => {
         id="experience"
         eyebrow="Experience"
         title="Where I've worked"
-        className="bg-white border-y border-line"
+        className="bg-sand border-y border-rule"
       >
-        <div className="relative border-l border-line ml-3 md:ml-4 space-y-12">
+        <div className="relative border-l border-rule ml-3 md:ml-4 space-y-12">
           {experience.map((job, index) => (
             <Reveal key={job.id} delay={index * 60}>
               <div className="relative pl-8 md:pl-10">
-                <div className="absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full bg-accent ring-4 ring-white" />
+                <div className="absolute -left-[4px] top-2.5 w-[7px] h-[7px] bg-rust-mark" />
                 <div className="flex flex-col md:flex-row md:items-baseline gap-x-2 gap-y-1 mb-1">
                   <h3 className="text-lg font-semibold text-ink">{job.role}</h3>
-                  <span className="text-accent font-medium">@ {job.company}</span>
+                  <span className="text-rust font-medium">@ {job.company}</span>
                 </div>
-                <div className="font-mono text-xs text-faint mb-4">{job.period}</div>
+                <div className="font-mono text-xs text-ink-secondary mb-4">{job.period}</div>
                 <ul className="space-y-2">
                   {job.description.map((point, i) => (
-                    <li key={i} className="text-muted flex items-start gap-2.5 text-sm md:text-base">
-                      <span className="mt-2 w-1.5 h-1.5 rounded-full bg-line flex-shrink-0" />
+                    <li key={i} className="text-ink-secondary flex items-start gap-2.5 text-sm md:text-base">
+                      <span className="text-rust flex-shrink-0 leading-none mt-1.5" aria-hidden="true">*</span>
                       <span>{point}</span>
                     </li>
                   ))}
@@ -444,36 +430,60 @@ const App: React.FC = () => {
         </div>
       </Section>
 
+      {/* --- NOW --- */}
+      <section id="now" className="on-dark bg-midnight px-6 py-24 md:px-10 lg:px-16 scroll-mt-20">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mb-14">
+            <p className="type-label mb-4 text-rust-light">Now / {now.updated}</p>
+            <h2 className="type-display-l text-cream">What has my attention.</h2>
+          </Reveal>
+          <div className="border-t border-rule-dark">
+            {now.items.map((item, index) => (
+              <Reveal key={item.label}>
+                <article className="grid gap-4 border-b border-rule-dark py-8 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10">
+                  <p className="type-label text-rust-light">0{index + 1} / {item.label}</p>
+                  <div>
+                    <h3 className="type-display-s text-cream">{item.value}</h3>
+                    <p className="mt-3 max-w-2xl text-cream-secondary">{item.detail}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* --- CONTACT / FOOTER --- */}
-      <footer id="contact" className="bg-ink text-stone-300 py-24 px-6 scroll-mt-20">
+      <footer id="contact" className="on-dark bg-void text-cream-secondary py-24 px-6 scroll-mt-20">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="font-mono text-xs uppercase tracking-[0.2em] text-accentBorder mb-6">
+          <div className="type-wordmark mb-14 text-cream">OLAMIDE<br />BALOGUN</div>
+          <div className="type-label text-rust-light mb-6">
             Get in touch
           </div>
-          <h2 className="font-heading text-4xl md:text-5xl text-white mb-6 tracking-tight">
+          <h2 className="type-display-l text-cream mb-6">
             Let's build something reliable.
           </h2>
-          <p className="mb-12 text-lg max-w-2xl mx-auto text-stone-400 leading-relaxed">
-            I'm always happy to talk about applied AI, GenAI systems, or research collaboration —
-            reach out and let's compare notes.
+          <p className="mb-12 text-lg max-w-2xl mx-auto text-cream-secondary leading-relaxed">
+            I'm always happy to talk about applied AI, GenAI systems, or research
+            collaboration. Reach out and let's compare notes.
           </p>
 
           <div className="flex flex-wrap justify-center gap-4 mb-16">
-            <a href="mailto:olamidebalogun174@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
+            <a href="mailto:olamidebalogun174@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
               <Mail size={17} /> olamidebalogun174@gmail.com
             </a>
-            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
-              <Github size={17} /> GitHub
+            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
+              GitHub
             </a>
-            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
-              <Linkedin size={17} /> LinkedIn
+            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
+              LinkedIn
             </a>
-            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-accent rounded-full transition-colors text-white text-sm">
-              <ExternalLink size={17} /> Hugging Face
+            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
+              Hugging Face
             </a>
           </div>
 
-          <div className="text-sm text-stone-500 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3">
+          <div className="text-sm text-cream-secondary pt-8 border-t border-rule-dark flex flex-col md:flex-row justify-between items-center gap-3">
             <p>© {new Date().getFullYear()} Olamide Balogun. Built with React &amp; Tailwind.</p>
             <p className="font-mono text-xs">Lagos, Nigeria</p>
           </div>
