@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Mail, Github, Linkedin, ExternalLink, Play, Award, Trophy,
+  Mail, Code, ExternalLink, Play, Award, Trophy,
   ArrowUpRight, BookOpen, Languages, Search, Microscope, MapPin,
-} from 'lucide-react';
+} from '@sketchyicons/react';
 
-import { Button } from './components/Button';
 import { Section } from './components/Section';
 import { Reveal } from './components/Reveal';
+import { HeroParticles } from './components/HeroParticles';
 
 import { projects } from './data/projects';
 import { experience } from './data/experience';
@@ -15,41 +15,11 @@ import { Project } from './types';
 
 const navLinks = [
   { href: '#about', label: 'About' },
-  { href: '#projects', label: 'Projects' },
-  { href: '#writing', label: 'Writing' },
+  { href: '#projects', label: 'Work' },
+  { href: '#writing', label: 'Notes' },
   { href: '#experience', label: 'Experience' },
+  { href: '#contact', label: 'Elsewhere' },
 ];
-
-const socials = [
-  { href: 'https://github.com/olamideba', label: 'GitHub', icon: Github },
-  { href: 'https://www.linkedin.com/in/olamideba/', label: 'LinkedIn', icon: Linkedin },
-  { href: 'https://huggingface.co/olamideba', label: 'Hugging Face', icon: ExternalLink },
-];
-
-// Extracts the root domain from a URL for use with the favicon service.
-function faviconUrl(siteUrl: string): string {
-  try {
-    const { hostname } = new URL(siteUrl);
-    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
-  } catch {
-    return '';
-  }
-}
-
-// Favicon displayed next to a project title when a live URL is available.
-const ProjectFavicon: React.FC<{ url: string }> = ({ url }) => {
-  const src = faviconUrl(url);
-  if (!src) return null;
-  return (
-    <img
-      src={src}
-      alt=""
-      width={18}
-      height={18}
-      className="flex-shrink-0 opacity-80"
-    />
-  );
-};
 
 // Small labelled link used inside project cards.
 const ProjectLink: React.FC<{ href: string; icon: React.ElementType; label: string }> = ({
@@ -71,7 +41,7 @@ const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
   if (!l && !project.privateRepo) return null;
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-      {l?.github && <ProjectLink href={l.github} icon={Github} label="Code" />}
+      {l?.github && <ProjectLink href={l.github} icon={Code} label="Code" />}
       {l?.live && <ProjectLink href={l.live} icon={ExternalLink} label="Live demo" />}
       {l?.video && <ProjectLink href={l.video} icon={Play} label="Demo video" />}
       {l?.devpost && <ProjectLink href={l.devpost} icon={Trophy} label="Devpost" />}
@@ -79,7 +49,7 @@ const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
       {l?.doi && <ProjectLink href={l.doi} icon={Microscope} label="Journal publication" />}
       {project.privateRepo && (
         <span className="inline-flex items-center gap-1.5 text-sm text-ink-secondary">
-          <Github size={15} strokeWidth={1.75} />
+          <Code size={15} strokeWidth={1.75} />
           <span>Private repo</span>
         </span>
       )}
@@ -102,121 +72,131 @@ const Tags: React.FC<{ tags: string[] }> = ({ tags }) => (
 
 const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('#about');
+  const [heroHasPassed, setHeroHasPassed] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const aiProjects = projects.filter((p) => p.category === 'ai-ml');
   const productProjects = projects.filter((p) => p.category === 'full-stack');
 
+  useEffect(() => {
+    const sections = navLinks
+      .map(({ href }) => document.querySelector<HTMLElement>(href))
+      .filter((section): section is HTMLElement => section !== null);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(`#${visible.target.id}`);
+      },
+      { rootMargin: '-18% 0px -62% 0px', threshold: [0.1, 0.35, 0.6] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const hero = document.querySelector('header');
+    if (!hero) return undefined;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroHasPassed(!entry.isIntersecting),
+      { rootMargin: '0px 0px -90% 0px', threshold: 0 },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="min-h-screen bg-paper text-ink font-sans antialiased">
 
-      {/* --- NAVIGATION --- */}
-      <nav className="fixed top-0 w-full bg-paper border-b border-rule z-50">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <a href="#" className="flex items-center gap-3 group">
-            <picture>
-              <source srcSet="/images/pfp.webp" type="image/webp" />
-              <img
-                src="/images/pfp.jpg"
-                alt=""
-                width={36}
-                height={36}
-                className="w-9 h-9 object-cover border border-rule"
-              />
-            </picture>
-            <span className="type-display-s">Olamide Balogun</span>
-          </a>
+      {/* --- HERO --- */}
+      <header className="hero-sky on-dark relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-midnight px-6 py-6 md:px-10 lg:px-16">
+        <HeroParticles />
 
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-ink-secondary">
+        <nav className="relative z-20 flex w-full items-start justify-between" aria-label="Primary navigation">
+          <a href="#top" className="type-monogram text-cream transition-opacity hover:opacity-70" aria-label="Back to top">
+            @olamideba
+          </a>
+          <div className="hidden text-right type-label text-cream-secondary md:flex md:flex-col md:items-end md:gap-2">
             {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="hover:text-rust transition-colors">
+              <a key={link.href} href={link.href} className="nav-link-hover transition-colors hover:text-rust-light">
                 {link.label}
               </a>
             ))}
-            <a
-              href="#contact"
-              className="px-4 py-2 border border-ink text-ink hover:border-rust hover:text-rust transition-colors"
-            >
-              Contact
-            </a>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button onClick={toggleMenu} className="md:hidden text-sm font-medium text-ink-secondary">
+          <button
+            type="button"
+            onClick={toggleMenu}
+            className="type-label text-cream-secondary transition-colors hover:text-rust-light md:hidden"
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
+          >
             {isMenuOpen ? 'Close' : 'Menu'}
           </button>
-        </div>
+        </nav>
 
-        {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden bg-paper border-b border-rule px-6 py-6 flex flex-col gap-4 animate-fade-in">
-            {[...navLinks, { href: '#contact', label: 'Contact' }].map((link) => (
-              <a key={link.href} href={link.href} onClick={toggleMenu} className="text-lg">
+          <div id="mobile-menu" className="absolute right-6 top-22 z-30 flex min-w-36 flex-col gap-3 border border-rule-dark bg-midnight p-5 text-right type-label text-cream-secondary md:hidden">
+            {navLinks.map((link) => (
+              <a key={link.href} href={link.href} onClick={toggleMenu} className="hover:text-rust-light">
                 {link.label}
               </a>
             ))}
           </div>
         )}
-      </nav>
 
-      {/* --- HERO --- */}
-      <header className="relative pt-36 pb-24 px-6 md:px-10 lg:px-16 overflow-hidden">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-[1fr_1.5fr] gap-12 items-center">
-          {/* Portrait */}
-          <div className="hidden md:block">
-            <div className="relative w-full max-w-[280px]">
-              <div className="absolute -inset-3 bg-sand border border-rust/30 -z-10 rotate-3" />
-              <picture>
-                <source srcSet="/images/me.webp" type="image/webp" />
-                <img
-                  src="/images/me.jpg"
-                  alt="Olamide Balogun"
-                  width={560}
-                  height={560}
-                  className="w-full aspect-square object-cover border border-rule"
-                />
-              </picture>
-            </div>
-          </div>
+        <div className="edge-label edge-label-left hidden md:block">6.5244° N, 3.3792° E</div>
+        <div className="edge-label edge-label-right hidden md:block">v0.2 / 2026</div>
 
-          <div className="animate-slide-up">
-            <div className="type-label text-rust mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-rust-mark inline-block" />
-              Applied AI Engineer
-              <span className="text-ink-secondary inline-flex items-center gap-1 normal-case tracking-normal">
+        <div id="top" className="relative z-10 mx-auto flex w-full max-w-6xl items-center py-28 md:py-24">
+          <div className="grid w-full border border-rule-dark md:grid-cols-[1.22fr_1fr]">
+            <div className="bg-paper p-7 sm:p-10 lg:p-14">
+              <p className="type-label mb-8 text-rust">Applied AI Engineer</p>
+              <h1 className="type-display-xl mb-8 max-w-[10ch] text-ink">
+                I build things, learn difficult stuff, and explore better ways to <em className="text-rust">{'{think}'}</em>.
+              </h1>
+              <p className="type-lead mb-10 text-ink-secondary">
+                I build production systems around agents, retrieval, and multimodal AI, while moving toward research engineering.
+              </p>
+              <div className="flex flex-wrap gap-x-7 gap-y-3 type-small">
+                <a href="#projects" className="text-link-rule text-ink hover:text-rust">View work</a>
+                <a href="#contact" className="text-link-rule text-ink hover:text-rust">Get in touch</a>
+              </div>
+              <p className="mt-12 inline-flex items-center gap-2 type-label text-ink-secondary">
                 <MapPin size={13} strokeWidth={1.75} /> Lagos, Nigeria
-              </span>
+              </p>
             </div>
-            <h1 className="type-display-xl text-ink mb-6">
-              Olamide Balogun
-            </h1>
-            <p className="type-lead text-ink-secondary mb-8">
-              I build and ship production GenAI systems: LLMs, retrieval-augmented generation,
-              agentic, and real-time multimodal architectures, mostly on Google Cloud. Currently
-              moving toward AI research engineering.
-            </p>
-            <div className="flex flex-wrap items-center gap-3 mb-10">
-              <Button href="#projects">View work</Button>
-              <Button variant="outline" href="#contact">Get in touch</Button>
-            </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-ink-secondary">
-              {socials.map(({ href, label, icon: Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 hover:text-rust transition-colors"
-                >
-                  <Icon size={16} strokeWidth={1.75} />
-                  <span>{label}</span>
-                </a>
-              ))}
+
+            <div className="hero-diagram relative flex min-h-[28rem] flex-col justify-between overflow-hidden border-t border-rule-dark p-7 sm:p-10 md:border-l md:border-t-0 lg:p-12">
+              <div className="orbit-diagram relative mx-auto h-56 w-56" aria-label="Think, Learn, Build">
+                <span className="orbit orbit-one" /><span className="orbit orbit-two" /><span className="orbit orbit-three" />
+                <span className="orbit-body orbit-body-one" /><span className="orbit-body orbit-body-two" /><span className="orbit-body orbit-body-three" />
+                <span className="orbit-label orbit-label-think">Think</span>
+                <span className="orbit-label orbit-label-learn">Learn</span>
+                <span className="orbit-label orbit-label-build">Build</span>
+              </div>
+              <div className="relative z-10 flex flex-wrap gap-x-3 gap-y-2 type-label text-cream-secondary">
+                <span>{'{agents}'}</span><span>{'{retrieval}'}</span><span>{'{research}'}</span>
+              </div>
+              <span className="hero-disc" aria-hidden="true" />
             </div>
           </div>
         </div>
       </header>
+
+      {heroHasPassed && (
+        <aside className="section-index hidden lg:block" aria-label="Section index">
+          {navLinks.map((link) => (
+            <a key={link.href} href={link.href} className={activeSection === link.href ? 'is-active' : ''}>
+              <span aria-hidden="true">*</span>{link.label}
+            </a>
+          ))}
+        </aside>
+      )}
 
       {/* --- ABOUT --- */}
       <Section id="about" eyebrow="About" title="Engineer first, researcher in the making.">
@@ -240,7 +220,18 @@ const App: React.FC = () => {
             </p>
           </Reveal>
 
-          <Reveal delay={120} className="h-fit">
+          <Reveal delay={120} className="h-fit space-y-8">
+            <picture className="block border border-rule bg-sand p-3">
+              <source srcSet="/images/me.webp" type="image/webp" />
+              <img
+                src="/images/me.jpg"
+                alt="Olamide Balogun"
+                width={560}
+                height={560}
+                className="aspect-square w-full object-cover"
+                loading="lazy"
+              />
+            </picture>
             <div className="bg-sand p-6 border border-rule">
               <h3 className="type-label text-rust mb-5">
                 Currently exploring
@@ -364,10 +355,7 @@ const App: React.FC = () => {
             <Reveal key={project.id} delay={i * 80}>
               <article className="group h-full flex flex-col bg-paper p-6 border border-rule hover:border-rust/40 transition-colors">
                 <div className="flex items-center justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-2">
-                    {project.links?.live && <ProjectFavicon url={project.links.live} />}
-                    <h4 className="type-display-s text-ink">{project.title}</h4>
-                  </div>
+                  <h4 className="type-display-s text-ink">{project.title}</h4>
                   {project.status && (
                     <span className="type-label text-rust">
                       {project.status}
@@ -455,6 +443,7 @@ const App: React.FC = () => {
       {/* --- CONTACT / FOOTER --- */}
       <footer id="contact" className="on-dark bg-void text-cream-secondary py-24 px-6 scroll-mt-20">
         <div className="max-w-4xl mx-auto text-center">
+          <div className="type-wordmark mb-14 text-cream">OLAMIDE<br />BALOGUN</div>
           <div className="type-label text-rust-light mb-6">
             Get in touch
           </div>
@@ -470,14 +459,14 @@ const App: React.FC = () => {
             <a href="mailto:olamidebalogun174@gmail.com" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
               <Mail size={17} /> olamidebalogun174@gmail.com
             </a>
-            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
-              <Github size={17} /> GitHub
+            <a href="https://github.com/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
+              GitHub
             </a>
-            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
-              <Linkedin size={17} /> LinkedIn
+            <a href="https://www.linkedin.com/in/olamideba/" target="_blank" rel="noreferrer" className="inline-flex items-center px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
+              LinkedIn
             </a>
-            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
-              <ExternalLink size={17} /> Hugging Face
+            <a href="https://huggingface.co/olamideba" target="_blank" rel="noreferrer" className="inline-flex items-center px-5 py-3 border border-rule-dark text-cream type-small hover:border-rust-light hover:text-rust-light transition-colors">
+              Hugging Face
             </a>
           </div>
 

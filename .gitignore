@@ -2,3 +2,4 @@ node_modules/
 learn.md
 dist/
 docs/
+.claude/
