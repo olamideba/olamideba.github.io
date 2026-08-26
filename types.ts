@@ -14,6 +14,12 @@ export interface ProjectLinks {
   doi?: string;
 }
 
+export interface ProjectNarrative {
+  challenge: string;
+  built: string;
+  learned: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -25,6 +31,9 @@ export interface Project {
   metrics?: {                   // optional headline numbers
     [key: string]: string;
   };
+  featured?: boolean;
+  narrative?: ProjectNarrative;
+  availability?: string;
   links?: ProjectLinks;
   privateRepo?: boolean;        // repo exists but is not public
 }

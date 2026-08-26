@@ -10,6 +10,7 @@ import { HeroParticles } from './components/HeroParticles';
 
 import { projects } from './data/projects';
 import { experience } from './data/experience';
+import { now } from './data/now';
 import { posts } from './data/posts';
 import { Project } from './types';
 
@@ -18,6 +19,7 @@ const navLinks = [
   { href: '#projects', label: 'Work' },
   { href: '#writing', label: 'Notes' },
   { href: '#experience', label: 'Experience' },
+  { href: '#now', label: 'Now' },
   { href: '#contact', label: 'Elsewhere' },
 ];
 
@@ -41,6 +43,12 @@ const ProjectLinks: React.FC<{ project: Project }> = ({ project }) => {
   if (!l && !project.privateRepo) return null;
   return (
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      {project.featured && (
+        <a href={`/projects/${project.id}/`} className="inline-flex items-center gap-1.5 text-sm text-ink-secondary transition-colors hover:text-rust">
+          <BookOpen size={15} strokeWidth={1.75} />
+          <span>Project story</span>
+        </a>
+      )}
       {l?.github && <ProjectLink href={l.github} icon={Code} label="Code" />}
       {l?.live && <ProjectLink href={l.live} icon={ExternalLink} label="Live demo" />}
       {l?.video && <ProjectLink href={l.video} icon={Play} label="Demo video" />}
@@ -76,8 +84,8 @@ const App: React.FC = () => {
   const [heroHasPassed, setHeroHasPassed] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const aiProjects = projects.filter((p) => p.category === 'ai-ml');
-  const productProjects = projects.filter((p) => p.category === 'full-stack');
+  const featuredProjects = projects.filter((project) => project.featured);
+  const otherProjects = projects.filter((project) => !project.featured);
 
   useEffect(() => {
     const sections = navLinks
@@ -172,6 +180,15 @@ const App: React.FC = () => {
             </div>
 
             <div className="hero-diagram relative flex min-h-[28rem] flex-col justify-between overflow-hidden border-t border-rule-dark p-7 sm:p-10 md:border-l md:border-t-0 lg:p-12">
+              <picture className="hero-engraving">
+                <source srcSet="/images/flammarion-engraving.webp" type="image/webp" />
+                <img
+                  src="/images/flammarion-engraving.jpg"
+                  alt="Flammarion's 1888 engraving of a traveller looking beyond the starry sky"
+                  width={720}
+                  height={603}
+                />
+              </picture>
               <div className="orbit-diagram relative mx-auto h-56 w-56" aria-label="Think, Learn, Build">
                 <span className="orbit orbit-one" /><span className="orbit orbit-two" /><span className="orbit orbit-three" />
                 <span className="orbit-body orbit-body-one" /><span className="orbit-body orbit-body-two" /><span className="orbit-body orbit-body-three" />
@@ -270,124 +287,97 @@ const App: React.FC = () => {
         title="Projects"
         className="bg-sand border-y border-rule"
       >
-        {/* Category A: AI / ML Engineering (primary) */}
-        <Reveal className="mb-8">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="type-display-m text-ink">AI / ML Engineering</h3>
-            <span className="type-label text-ink-secondary">
-              the focus
-            </span>
-          </div>
-          <p className="text-ink-secondary mt-2 max-w-2xl">
-            Production GenAI systems and research, where most of my attention goes.
-          </p>
-        </Reveal>
-
-        <div className="grid md:grid-cols-2 gap-6 mb-20">
-          {aiProjects.map((project, i) => (
-            <Reveal key={project.id} delay={i * 80}>
-              <article className="group h-full flex flex-col bg-paper p-7 border border-rule hover:border-rust/40 transition-colors">
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <h4 className="type-display-s text-ink">{project.title}</h4>
-                  </div>
-                  <ArrowUpRight
-                    className="text-ink-secondary group-hover:text-rust transition-colors flex-shrink-0 mt-1"
-                    size={18}
-                  />
-                </div>
-
-                {project.status && (
-                  <div className="inline-flex self-start items-center px-2.5 py-1 mb-4 bg-sand border border-rust/30 text-rust text-xs font-medium">
-                    {project.status}
-                  </div>
-                )}
-
-                <p className="text-ink-secondary leading-relaxed mb-5">{project.description}</p>
-
-                {project.highlights && (
-                  <ul className="space-y-2.5 mb-5">
-                    {project.highlights.map((point, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-sm text-ink-secondary">
-                        <span className="text-rust flex-shrink-0 leading-none mt-1" aria-hidden="true">*</span>
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {project.metrics && (
-                  <div className="grid grid-cols-2 gap-3 mb-5 p-4 bg-sand border border-rule">
-                    {Object.entries(project.metrics).map(([key, value]) => (
-                      <div key={key}>
-                        <span className="block font-mono font-medium text-rust text-lg">{value}</span>
-                        <span className="block text-xs text-ink-secondary uppercase tracking-wide mt-0.5">{key}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* push footer to bottom */}
-                <div className="mt-auto pt-5 space-y-4">
-                  <Tags tags={project.tags} />
-                  <ProjectLinks project={project} />
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-
-        {/* Category B: Full-Stack & Product (secondary) */}
-        <Reveal className="mb-8">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h3 className="type-display-m text-ink">Full-Stack &amp; Product Engineering</h3>
-            <span className="type-label text-ink-secondary">
-              shipping range
-            </span>
-          </div>
-          <p className="text-ink-secondary mt-2 max-w-2xl">
-            Live, production software shipped for real stakeholders.
-          </p>
-        </Reveal>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {productProjects.map((project, i) => (
-            <Reveal key={project.id} delay={i * 80}>
-              <article className="group h-full flex flex-col bg-paper p-6 border border-rule hover:border-rust/40 transition-colors">
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <h4 className="type-display-s text-ink">{project.title}</h4>
-                  {project.status && (
-                    <span className="type-label text-rust">
-                      {project.status}
-                    </span>
+        <div className="border-t border-rule">
+          {featuredProjects.map((project, index) => (
+            <Reveal key={project.id}>
+              <article className="grid gap-8 border-b border-rule py-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14">
+                <div>
+                  <p className="type-label mb-4 text-rust">0{index + 1} / {project.status}</p>
+                  <h3 className="type-display-l mb-5 text-ink">{project.title}</h3>
+                  <p className="type-body text-ink-secondary">{project.description}</p>
+                  {project.availability && (
+                    <p className="mt-5 border-l-2 border-rust pl-4 text-sm leading-relaxed text-ink-secondary">
+                      {project.availability}
+                    </p>
                   )}
+                  <div className="mt-7">
+                    <ProjectLinks project={project} />
+                  </div>
                 </div>
-                <p className="text-sm text-ink-secondary leading-relaxed mb-5">{project.description}</p>
-                <div className="mt-auto space-y-4">
-                  <Tags tags={project.tags} />
-                  <ProjectLinks project={project} />
-                </div>
+
+                {project.narrative && (
+                  <div className="space-y-7">
+                    <div className="border-t border-rule pt-4">
+                      <p className="type-label mb-2 text-rust">What was hard</p>
+                      <p className="type-body text-ink-secondary">{project.narrative.challenge}</p>
+                    </div>
+                    <div className="border-t border-rule pt-4">
+                      <p className="type-label mb-2 text-rust">What I built</p>
+                      <p className="type-body text-ink-secondary">{project.narrative.built}</p>
+                    </div>
+                    <div className="border-t border-rule pt-4">
+                      <p className="type-label mb-2 text-rust">What I learned</p>
+                      <p className="type-body text-ink-secondary">{project.narrative.learned}</p>
+                    </div>
+                    {project.metrics && (
+                      <div className="flex flex-wrap gap-x-8 gap-y-4 border-t border-rule pt-4">
+                        {Object.entries(project.metrics).map(([key, value]) => (
+                          <div key={key}>
+                            <span className="block font-mono text-lg text-rust">{value}</span>
+                            <span className="type-label text-ink-secondary">{key}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <Tags tags={project.tags} />
+                  </div>
+                )}
               </article>
             </Reveal>
           ))}
         </div>
+
+        <Reveal className="mt-16">
+          <p className="type-label mb-4 text-rust">Other work</p>
+          <ol className="border-t border-rule">
+            {otherProjects.map((project, index) => (
+              <li key={project.id} className="grid gap-4 border-b border-rule py-6 md:grid-cols-[3rem_minmax(0,1fr)_auto] md:gap-6">
+                <span className="font-mono text-sm text-ink-secondary">0{index + 5}</span>
+                <div>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <h3 className="type-display-s text-ink">{project.title}</h3>
+                    {project.status && <span className="type-label text-rust">{project.status}</span>}
+                  </div>
+                  <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-secondary">{project.description}</p>
+                </div>
+                <div className="md:justify-self-end">
+                  <ProjectLinks project={project} />
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Reveal>
       </Section>
 
       {/* --- WRITING --- */}
       <Section
         id="writing"
-        eyebrow="Writing"
+        eyebrow="Thinking"
         title="Notes from the build"
-        subtitle="Engineering write-ups on what I'm shipping and learning. More to come."
+        subtitle="Engineering notes from systems that had to work beyond the demo."
       >
-        <div className="space-y-4">
+        <div className="thinking-field">
+          <picture className="thinking-engraving" aria-hidden="true">
+            <source srcSet="/images/flammarion-engraving.webp" type="image/webp" />
+            <img src="/images/flammarion-engraving.jpg" alt="" width={720} height={603} />
+          </picture>
           {posts.map((post, i) => (
             <Reveal key={post.id} delay={i * 80}>
               <a
                 href={post.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group block bg-sand p-7 border border-rule hover:border-rust/40 transition-colors"
+                className="relative z-10 group block border-b border-rule py-9 transition-colors hover:border-rust"
               >
                 <div className="flex items-center gap-3 type-label text-ink-secondary mb-3">
                   <span className="inline-flex items-center gap-1.5 text-rust">
@@ -402,7 +392,7 @@ const App: React.FC = () => {
                   <span>{post.title}</span>
                   <ArrowUpRight className="text-ink-secondary group-hover:text-rust transition-colors flex-shrink-0 mt-1.5" size={18} />
                 </h3>
-                <p className="text-ink-secondary leading-relaxed max-w-3xl">{post.excerpt}</p>
+                <p className="type-body text-ink-secondary">{post.excerpt}</p>
               </a>
             </Reveal>
           ))}
@@ -439,6 +429,29 @@ const App: React.FC = () => {
           ))}
         </div>
       </Section>
+
+      {/* --- NOW --- */}
+      <section id="now" className="on-dark bg-midnight px-6 py-24 md:px-10 lg:px-16 scroll-mt-20">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="mb-14">
+            <p className="type-label mb-4 text-rust-light">Now / {now.updated}</p>
+            <h2 className="type-display-l text-cream">What has my attention.</h2>
+          </Reveal>
+          <div className="border-t border-rule-dark">
+            {now.items.map((item, index) => (
+              <Reveal key={item.label}>
+                <article className="grid gap-4 border-b border-rule-dark py-8 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-10">
+                  <p className="type-label text-rust-light">0{index + 1} / {item.label}</p>
+                  <div>
+                    <h3 className="type-display-s text-cream">{item.value}</h3>
+                    <p className="mt-3 max-w-2xl text-cream-secondary">{item.detail}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* --- CONTACT / FOOTER --- */}
       <footer id="contact" className="on-dark bg-void text-cream-secondary py-24 px-6 scroll-mt-20">

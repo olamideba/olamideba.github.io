@@ -1,0 +1,80 @@
+---
+import { projects } from '../../../data/projects';
+import '../../styles.css';
+
+export function getStaticPaths() {
+  return projects
+    .filter((project) => project.featured && project.narrative)
+    .map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const links = project.links ?? {};
+const projectUrl = `https://olamideba.github.io/projects/${project.id}/`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{project.title} · Olamide Balogun</title>
+    <meta name="description" content={project.description} />
+    <link rel="canonical" href={projectUrl} />
+    <meta property="og:title" content={`${project.title} · Olamide Balogun`} />
+    <meta property="og:description" content={project.description} />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content={projectUrl} />
+    <meta property="og:image" content={`https://olamideba.github.io/images/og-${project.id}.jpg`} />
+    <link rel="preload" href="/fonts/neco-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/x-icon" href="/images/favicon-2.ico" />
+  </head>
+  <body>
+    <main class="min-h-screen bg-paper px-6 py-10 text-ink md:px-10 lg:px-16">
+      <div class="mx-auto max-w-5xl">
+        <a href="/" class="text-link-rule type-small text-ink-secondary hover:text-rust">Back to selected work</a>
+        <article class="mt-16 grid gap-12 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-14">
+          <header>
+            <p class="type-label mb-4 text-rust">{project.status}</p>
+            <h1 class="type-display-xl text-ink">{project.title}</h1>
+            <p class="type-lead mt-8 text-ink-secondary">{project.description}</p>
+            {project.availability && <p class="mt-6 border-l-2 border-rust pl-4 text-ink-secondary">{project.availability}</p>}
+            <div class="mt-10 flex flex-wrap gap-x-5 gap-y-3 text-sm text-ink-secondary">
+              {links.github && <a class="text-link-rule hover:text-rust" href={links.github}>Code</a>}
+              {links.live && <a class="text-link-rule hover:text-rust" href={links.live}>Live demo</a>}
+              {links.video && <a class="text-link-rule hover:text-rust" href={links.video}>Demo video</a>}
+              {links.devpost && <a class="text-link-rule hover:text-rust" href={links.devpost}>Devpost</a>}
+              {links.doi && <a class="text-link-rule hover:text-rust" href={links.doi}>Publication</a>}
+            </div>
+          </header>
+
+          <div class="space-y-8">
+            <section class="border-t border-rule pt-4">
+              <p class="type-label mb-2 text-rust">What was hard</p>
+              <p class="type-body text-ink-secondary">{project.narrative.challenge}</p>
+            </section>
+            <section class="border-t border-rule pt-4">
+              <p class="type-label mb-2 text-rust">What I built</p>
+              <p class="type-body text-ink-secondary">{project.narrative.built}</p>
+            </section>
+            <section class="border-t border-rule pt-4">
+              <p class="type-label mb-2 text-rust">What I learned</p>
+              <p class="type-body text-ink-secondary">{project.narrative.learned}</p>
+            </section>
+            {project.metrics && (
+              <dl class="flex flex-wrap gap-x-8 gap-y-4 border-t border-rule pt-4">
+                {Object.entries(project.metrics).map(([key, value]) => (
+                  <div>
+                    <dt class="type-label text-ink-secondary">{key}</dt>
+                    <dd class="mt-1 font-mono text-lg text-rust">{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+          </div>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>
