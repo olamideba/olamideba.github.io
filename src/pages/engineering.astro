@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import { projects } from '../../data/projects';
+import { posts } from '../../data/posts';
+import { experience } from '../../data/research';
+
+const linkLabels: Record<string, string> = {
+  github: 'Code',
+  live: 'Live',
+  video: 'Demo video',
+  writeup: 'Blog post',
+  doi: 'Paper',
+};
+---
+
+<Base
+  title="Engineering · Olamide Balogun"
+  description="Systems Olamide Balogun has built: multi-agent systems, retrieval pipelines, real-time voice agents and production backends."
+  path="/engineering/"
+>
+  <header class="article-head">
+    <h1>Engineering</h1>
+    <p class="small">I have built production AI systems since 2023: agents, retrieval pipelines, real-time voice and the backends around them. My research interests are on the <a href="/">main page</a>.</p>
+  </header>
+
+  <section>
+    <h2>Projects</h2>
+    {projects.map((p) => (
+      <article class="entry" id={p.id}>
+        <h3>{p.sections ? <a href={`/projects/${p.id}/`}>{p.title}</a> : p.title}</h3>
+        <p class="meta">{p.context}</p>
+        <p>{p.summary}</p>
+        <p class="small">{p.stack}</p>
+        {p.links && (
+          <ul class="link-row">
+            {Object.entries(p.links).map(([k, href]) => <li><a href={href}>{linkLabels[k] ?? k}</a></li>)}
+          </ul>
+        )}
+      </article>
+    ))}
+  </section>
+
+  <section>
+    <h2>Experience</h2>
+    <ul class="compact">
+      {experience.map((e) => (
+        <li>
+          <div class="line"><span>{e.role}, {e.org}</span><span class="when">{e.period}</span></div>
+          <p class="note">{e.note}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Writing</h2>
+    <ul class="compact">
+      {posts.map((post) => (
+        <li>
+          <div class="line"><a href={post.url}>{post.title}</a><span class="when">{post.platform}, {post.date}</span></div>
+          <p class="note">{post.excerpt}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>

@@ -1,25 +1,99 @@
 ---
-import App from '../../App';
-import '../styles.css';
+import Base from '../layouts/Base.astro';
+import { profile, about, publication, researchProjects, experience, education } from '../../data/research';
+import { projects } from '../../data/projects';
+
+const selected = projects.filter((p) => ['grad-paddy', 'cognito'].includes(p.id));
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Olamide Balogun · Applied AI Engineer</title>
-    <meta name="description" content="Olamide Balogun, Applied AI Engineer in Lagos, Nigeria. I build and ship production systems around agents, retrieval, and multimodal AI." />
-    <meta property="og:title" content="Olamide Balogun · Applied AI Engineer" />
-    <meta property="og:description" content="Production systems around agents, retrieval, and multimodal AI." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://olamideba.github.io/" />
-    <meta property="og:image" content="https://olamideba.github.io/images/og-home.jpg" />
-    <link rel="preload" href="/fonts/neco-variable.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/ibm-plex-mono-400.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="icon" type="image/x-icon" href="/images/favicon-2.ico" />
-  </head>
-  <body>
-    <App client:load />
-  </body>
-</html>
+<Base
+  title="Olamide Balogun"
+  description="Olamide Balogun, AI engineer in Lagos, Nigeria. Research interests: reliability, safety and grounding of language models in low-resource languages such as Yoruba."
+  path="/"
+>
+  <header class="intro">
+    <picture>
+      <source srcset="/images/olamide.webp" type="image/webp" />
+      <img src="/images/olamide.jpg" alt="Olamide Balogun" width="136" height="136" />
+    </picture>
+    <div>
+      <h1>{profile.name}</h1>
+      <p class="role">{profile.role}</p>
+      <p class="seeking">{profile.seeking}</p>
+      <p class="interest">{profile.interest}</p>
+      <ul class="link-row">
+        {profile.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </div>
+  </header>
+
+  <section id="publication">
+    <h2>Publication</h2>
+    <p class="citation">
+      {publication.authors} ({publication.year}).{' '}
+      <span class="title">{publication.title}.</span>{' '}
+      <em>{publication.venue}</em>, {publication.details}.
+    </p>
+    <ul class="link-row">
+      <li><a href={publication.pdf}>PDF</a></li>
+      <li><a href={publication.doi}>DOI</a></li>
+      <li><a href={publication.code}>Code</a></li>
+    </ul>
+    <p style="margin-top: 0.75rem">{publication.summary}</p>
+  </section>
+
+  <section id="research">
+    <h2>Research</h2>
+    {researchProjects.map((r) => (
+      <article class="entry" id={r.id}>
+        <h3>{r.title}</h3>
+        <p class="meta">{r.period}</p>
+        <p class="lead-q">{r.question}</p>
+        {r.body.map((para) => <p>{para}</p>)}
+        <ul class="link-row">
+          {r.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+      </article>
+    ))}
+  </section>
+
+  <section id="about">
+    <h2>About</h2>
+    {about.map((para) => <p>{para}</p>)}
+  </section>
+
+  <section id="education">
+    <h2>Education</h2>
+    <ul class="compact">
+      <li>
+        <div class="line"><span>{education.degree}</span><span class="when">{education.year}</span></div>
+        <p class="note">{education.school}. {education.detail}</p>
+      </li>
+    </ul>
+  </section>
+
+  <section id="experience">
+    <h2>Experience</h2>
+    <ul class="compact">
+      {experience.map((e) => (
+        <li>
+          <div class="line"><span>{e.role}, {e.org}</span><span class="when">{e.period}</span></div>
+          <p class="note">{e.note}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="engineering">
+    <h2>Engineering</h2>
+    <ul class="compact">
+      {selected.map((p) => (
+        <li>
+          <div class="line"><a href={`/projects/${p.id}/`}>{p.title}</a><span class="when">{p.context.split('.')[0]}</span></div>
+          <p class="note">{p.summary}</p>
+        </li>
+      ))}
+    </ul>
+    <p class="small" style="margin-top: 1rem">More systems work, client projects and writing: <a href="/engineering/">engineering portfolio</a>.</p>
+  </section>
+</Base>

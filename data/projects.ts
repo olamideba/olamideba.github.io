@@ -1,171 +1,139 @@
 import { Project } from '../types';
 
-// Three projects are deliberately expanded into stories. The rest remain
-// concise entries so the work is indexed without implying equal depth.
+// Engineering portfolio, shown at /engineering. Projects with `sections` also
+// get a page at /projects/<id>/. The research framing of Parallax lives in
+// data/research.ts; this file describes the systems.
 export const projects: Project[] = [
-  // ── Category A — AI / ML Engineering ────────────────────────────────────
   {
-    id: "parallax",
-    title: "Parallax",
-    description:
-      "An agent society adopting the Multi Agent Debate Framework to help professors, faculty members, and research labs filter out the noise in student outreach emails.",
-    category: "ai-ml",
-    status: "Qwen Cloud Global AI Hackathon · 2026",
-    featured: true,
-    narrative: {
-      challenge: "Faculty inboxes need a way to separate serious outreach from spam without silently losing a candidate who deserves review.",
-      built: "A Gatekeeper routes uncertain cases to a reviewable queue, then five agents debate each candidate over a shared transcript. The final verdict includes receipts from the professor's publications, and no email sends without human approval.",
-      learned: "An agentic workflow needs an audit trail. A verdict is more useful when a professor can replay the reasoning and decide what happens next.",
+    id: 'parallax',
+    title: 'Parallax',
+    summary:
+      'A multi-agent debate system that judges whether a research-inquiry email fits a professor’s published work, with every claim tied to a retrieved passage and a human approving any reply.',
+    context: 'Qwen Cloud Global AI Hackathon, 2026',
+    stack: 'LangGraph, Qwen, FastAPI, Celery, Postgres with pgvector, Next.js, Alibaba Cloud',
+    links: {
+      github: 'https://github.com/olamideba/parallax',
+      video: 'https://youtu.be/wA0PStZ8JVU',
+      writeup: 'https://olamideba.medium.com/what-if-we-build-for-the-overwhelmed-professor-91cfedadbf58',
     },
-    highlights: [
-      "Gatekeeper filters spam before it costs a debate; rejections go to a reviewable queue",
-      "Five agents debate each candidate over a shared transcript, ending in an Arbitrator's verdict.",
-      "Every claim is grounded in a receipt from the professor's own publications, never hallucinated.",
-      "Professors replay the debate in a pixel-art seminar room with a synthesized voice per agent.",
-      "No email sends without explicit human approval."
+    sections: [
+      {
+        heading: 'Question',
+        paragraphs: [
+          'A single LLM asked to judge something tends to settle on an answer early and then defend it. Liang et al. (2024) call this Degeneration-of-Thought and propose Multi-Agent Debate as a remedy; ChatEval (Chan et al., 2024) applies the same idea to LLM evaluators. I built Parallax to see what debate changes on a judgement task where the inputs contain deliberate traps, and what it costs.',
+        ],
+      },
+      {
+        heading: 'Setup',
+        paragraphs: [
+          'A cheap first pass removes obvious mass mail. Each remaining email goes to a moderated debate between a research-fit advocate, an authenticity auditor and a capacity-and-funding assessor, who take turns over one shared transcript. An arbitrator reads the full transcript once and decides: invite, ask for more information, or decline. All agents retrieve from the professor’s indexed publications, and each claim must cite a passage. The debate is a LangGraph state graph with a hard cap on rounds.',
+          'The baseline is a single agent with the same model family, the same retrieval tool and the same corpus. Both were run on 19 hand-written cases for two fictional professors, each case labelled with the correct decision and a failure mode: fabricated citation, inflated alignment, capacity mismatch, clean strong fit, clean weak fit, or a harder variant such as a contradiction buried mid-email.',
+        ],
+      },
+      {
+        heading: 'Result',
+        paragraphs: [
+          'Debate: 17 of 19 correct, one planted trap accepted, 620,795 tokens, 1,266 seconds. Single agent: 16 of 19 correct, two traps accepted, 104,895 tokens, 530 seconds.',
+          'The debate caught a false claim of extending the professor’s work and a funding problem that the single agent waved through. It also downgraded both clean, strong candidates to “ask for more information”, so its errors lean towards caution. With 19 synthetic cases, a one-case difference is not evidence of anything. What the benchmark does show is where each approach breaks, and it gives me a harness to test changes against.',
+        ],
+      },
+      {
+        heading: 'What the transcripts showed',
+        paragraphs: [
+          'Earlier runs had the debate scoring well below the single agent. The per-case transcripts showed why. Every test case was missing the candidate’s country, so the assessor could never clear visa feasibility and held every candidate. And the auditor’s prompt did not separate claims about the professor’s work, which can be checked, from claims about the candidate’s own unpublished work, which cannot; it flagged every self-reported credential. Fixing those two faults, and giving both systems an equal token budget, produced the result above. One miscalibrated agent was enough to pull the whole group down.',
+          'When an agent was asked to continue its own turn, it sometimes rebutted a colleague who had not spoken yet. Re-sending the whole transcript on every turn made cost grow quadratically, to about 138,000 tokens for one debate. Both were fixed by telling the agent explicitly that it was continuing its own point, capping turn length, and truncating quoted evidence in the re-sent transcript while keeping it in full in the record.',
+          'With the model’s hidden reasoning (“thinking”) on, each turn produced 4,000–6,000 tokens and a 15-turn debate took over 450 seconds. With it off, the same debate took 89 seconds and turns stayed under 700 tokens. I switched it off for speed. Whether thinking improves the arbitrator’s verdicts is the next thing to measure; the system has a setting to turn it on for the arbitrator alone.',
+        ],
+      },
+      {
+        heading: 'Limitations',
+        paragraphs: [
+          'Nineteen cases, all written by me, for two fictional professors. One run per configuration, so no variance estimate. A single model family. The labels are my judgement. A real evaluation would need more cases, written or labelled by people other than me, and repeated runs.',
+        ],
+      },
     ],
-    tags: ["Langraph", "Qwen", "FastAPI", "Supabase", "Next.js 14", "Multi-agent debate", "Alibaba Cloud"],
-    links: {
-      github: "https://github.com/olamideba/parallax",
-      live: "https://parallax-five-chi.vercel.app",
-      devpost: "https://devpost.com/software/parallax-walxpi",
-      video: "https://youtu.be/wA0PStZ8JVU",
-    },
   },
   {
-    id: "grad-paddy",
-    title: "Grad Paddy",
-    description:
-      "An AI agent that helps prospective grad students discover programs and navigate applications, built as a session-aware multi-agent system with human-in-the-loop checkpoints.",
-    category: "ai-ml",
-    status: "Google Cloud Rapid Agent Hackathon · 2026",
-    featured: true,
-    availability: "Currently being productionized for consumer usage at gradpaddy.com.",
-    narrative: {
-      challenge: "Graduate-school guidance has to keep a student's context intact while making program recommendations they can inspect and act on.",
-      built: "A session-aware multi-agent system with a PersistentChatAgent wrapper, human-in-the-loop checkpoints, Elastic MCP program search, and a FastAPI and Next.js application stack.",
-      learned: "Durable sessions and explicit checkpoints make an agent easier to trust when the decision has real consequences for the person using it.",
+    id: 'grad-paddy',
+    title: 'Grad Paddy',
+    summary:
+      'An agent that helps students find graduate programmes and plan applications. It keeps long sessions in durable storage and stops for the student’s approval before any action that writes data.',
+    context: 'Google Cloud Rapid Agent Hackathon, 2026. Now being developed into a product at gradpaddy.com.',
+    stack: 'Google ADK, Gemini, FastAPI, Firestore, Elasticsearch, Next.js',
+    links: {
+      github: 'https://github.com/olamideba/grad-paddy',
+      live: 'https://gradpaddy.com',
+      video: 'https://youtu.be/Je6jsfGuVA4',
     },
-    highlights: [
-      "Session-aware multi-agent architecture with a custom PersistentChatAgent wrapper for durable chat sessions.",
-      "Human-in-the-loop checkpoints and Elastic MCP tools for grounded program search.",
-      "FastAPI backend (Google ADK, ag_ui_adk, Gemini, Firestore) with a Next.js 14 frontend.",
+    sections: [
+      {
+        heading: 'What it is',
+        paragraphs: [
+          'A routing agent hands work to specialist agents: a larger Gemini model for reasoning and a smaller one for routine tasks. Programme search runs against an Elasticsearch index through MCP tools, so recommendations come from real programme data.',
+          'When an agent pauses for the student, its state is saved to Firestore so the session can resume later. Tool calls that write data are intercepted and held until the student approves them, and the agent’s progress streams to the browser as it runs.',
+        ],
+      },
     ],
-    tags: ["Google ADK", "Gemini", "FastAPI", "Firestore", "Next.js 14", "Multi-agent", "MCP"],
-    links: {
-      github: "https://github.com/olamideba/grad-paddy",
-      live: "https://gradpaddy.com",
-      devpost: "https://devpost.com/software/grad-paddy",
-      video: "https://youtu.be/Je6jsfGuVA4",
-    },
   },
   {
-    id: "cognito",
-    title: "Cognito",
-    description:
-      "A real-time, voice-and-vision AI tutor that scores and surfaces a student's 'flow state' live during a session.",
-    category: "ai-ml",
-    status: "Gemini Live Agent Hackathon · 2026",
-    featured: true,
-    narrative: {
-      challenge: "A real-time tutor is only useful when its voice and vision session survives the messy parts of a live connection.",
-      built: "A Gemini Live API tutor on FastAPI and Cloud Run, with WebSocket streaming, structured error envelopes, and a dismissible recovery banner.",
-      learned: "Realtime reliability is state management: reconnects, audio ownership, and session hydration are product behavior, not edge cases.",
+    id: 'cognito',
+    title: 'Cognito',
+    summary:
+      'A voice-first study companion on the Gemini Live API. It talks a learner through a topic, asks Socratic questions, and can see their screen or webcam when they allow it.',
+    context: 'Gemini Live Agent Hackathon, 2026',
+    stack: 'Google ADK, Gemini Live API, FastAPI, WebSockets, Firestore, Cloud Run',
+    links: {
+      github: 'https://github.com/olamideba/cognito',
+      live: 'https://cognito-lake-rho.vercel.app/',
+      video: 'https://youtu.be/giShVfu26oE',
     },
-    highlights: [
-      "Built on the Gemini Live API with WebSocket streaming over FastAPI and Cloud Run.",
-      "Hardened the realtime layer: fixed reconnection race conditions, audio duplication, and stale session hydration.",
-      "Structured error envelopes plus a dismissible UI banner to gracefully handle intermittent APIError 1008/1011.",
+    sections: [
+      {
+        heading: 'What it is',
+        paragraphs: [
+          'Audio and optional screen or webcam frames stream to a FastAPI backend over WebSockets, which runs an ADK agent on the Gemini Live API. The agent uses tools to set a session goal, keep time, generate quizzes and draw analogies, and sends typed events to the browser to render them.',
+          'Most of the work was keeping a live session usable when the connection was not: reconnecting without duplicating audio, restoring the goal, timer and conversation from Firestore after a drop, and showing a clear recovery message instead of a dead screen.',
+        ],
+      },
     ],
-    tags: ["Gemini Live API", "WebSocket", "FastAPI", "Cloud Run", "Firestore", "Multimodal"],
-    links: {
-      github: "https://github.com/olamideba/cognito",
-      live: "https://cognito-lake-rho.vercel.app/",
-      video: "https://youtu.be/giShVfu26oE",
-    },
   },
   {
-    id: "tiny-aya",
-    title: "Tiny Aya Expedition: Cohere Labs",
-    description:
-      "Multilingual LLM safety research probing how romanized, low-resource scripts affect model robustness under adversarial prompting.",
-    category: "ai-ml",
-    status: "Research · Cohere Labs",
-    highlights: [
-      "Studied adversarial prompting in romanized multilingual scripts and its effect on model robustness.",
-      "Direct signal toward my interest in multilingual, low-resource LLMs; research-oriented rather than a deployed product.",
+    id: 'rag-chatbot',
+    title: 'Astra: scholarly question answering with fine-tuned retrieval',
+    summary:
+      'My undergraduate thesis. A retrieval-augmented chatbot over the ACL Anthology, with BAAI/bge embedding models fine-tuned on synthetic question–passage pairs. Published in the Nigerian Journal of Technology.',
+    context: 'Undergraduate thesis, 2024. Published 2026.',
+    stack: 'Python, sentence-transformers, ChromaDB, LangChain, Mixtral, Streamlit',
+    links: {
+      github: 'https://github.com/olamideba/rag-chatbot-final',
+      doi: 'https://doi.org/10.67358/njt.2026.5975',
+    },
+    sections: [
+      {
+        heading: 'What it is',
+        paragraphs: [
+          'The knowledge base is the ACL Anthology corpus, split into passages and indexed in a vector store. I generated synthetic question–passage pairs from the corpus, split them 70/15/15 for training, validation and test, and fine-tuned bge-small and bge-large on the training set. Mixtral generates answers from the retrieved passages.',
+          'On the test split, fine-tuned bge-large found the correct passage first 88.9% of the time, against 73.0% for the base model. MRR@10 rose from 0.82 to 0.92. At k=10 both models are close to the ceiling (97.3% and 96.5%), so the gain is in ranking the right passage first, which is what matters most for the answer the generator writes.',
+          'The paper measures retrieval only. It does not measure hallucination in the generated answers directly; that would be the obvious next study.',
+        ],
+      },
     ],
-    tags: ["LLM Safety", "Multilingual", "Adversarial Prompting", "Research"],
-    links: {
-      github: "https://github.com/manaswithasunkara/AI_Safety_Adversersial_Prompting",
-      certificate: "https://credsverse.com/credentials/6b64060a-e45b-46d3-aa53-8049a68279c0",
-    },
   },
   {
-    id: "rag-chatbot",
-    title: "RAG Scholarly Research Chatbot",
-    description:
-      "A retrieval-augmented system that answers scholarly-research queries over academic sources, built to reduce hallucination in academic settings. My undergraduate final-year project and first research manuscript.",
-    category: "ai-ml",
-    status: "Published · NIJOTECH",
-    featured: true,
-    narrative: {
-      challenge: "Academic answers need evidence, not plausible language. The hard part was making retrieval quality visible and measurable.",
-      built: "Fine-tuned BAAI/bge-large embeddings over the ACL Anthology and used vector retrieval to ground scholarly answers.",
-      learned: "Retrieval needs its own evaluation. Measuring the retrieval layer made the improvement against baseline LLM answers concrete.",
-    },
-    highlights: [
-      "Fine-tuned BAAI/bge-large embeddings over the ACL Anthology with vector-based retrieval.",
-      "97% retrieval accuracy and a 15% reduction in hallucination versus baseline LLM responses.",
-    ],
-    metrics: {
-      "Retrieval accuracy": "97%",
-      "Hallucination": "−15%",
-    },
-    tags: ["RAG", "Embeddings", "Vector Search", "Python"],
-    links: {
-      github: "https://github.com/olamideba/rag-chatbot-final",
-      live: "https://huggingface.co/spaces/olamideba/astra",
-      doi: "https://doi.org/10.67358/njt.2026.5975"
-    },
-  },
-
-  // ── Category B — Full-Stack & Product Engineering ───────────────────────
-  {
-    id: "nexr",
-    title: "NexR",
-    description:
-      'Backend for a unified social media analytics platform, "The Forbes of Social Media." I designed and built the API and data layer: modular FastAPI monolith, PostgreSQL, Redis caching, transactional email via Mailgun, and file storage through Supabase. (Frontend handled separately by a dedicated engineer.)',
-    category: "full-stack",
-    status: "Live",
-    tags: ["FastAPI", "PostgreSQL", "Redis", "Mailgun", "Supabase", "Render", "Python"],
-    links: {
-      live: "https://nexrcore.com",
-    },
-    privateRepo: true,
+    id: 'nexr',
+    title: 'NexR',
+    summary:
+      'Backend for a social media analytics platform: a modular FastAPI service with PostgreSQL, Redis caching, transactional email and file storage. I designed and built the API and data layer.',
+    context: 'Client project, live',
+    stack: 'FastAPI, PostgreSQL, Redis, Supabase',
+    links: { live: 'https://nexrcore.com' },
   },
   {
-    id: "andus",
-    title: "Andus D'Great Schools",
-    description:
-      "A public-facing site for a private school, kindergarten through secondary, in Ikorodu, Lagos; a real deployed client project and my alma mater.",
-    category: "full-stack",
-    status: "Live",
-    tags: ["React", "TypeScript"],
-    links: {
-      live: "https://www.andusdgreatschools.com/",
-    },
-  },
-  {
-    id: "sura",
-    title: "Sura",
-    description:
-      "An e-commerce/brand site for a modest-fashion label. I contributed primarily the backend and data layer.",
-    category: "full-stack",
-    status: "Live",
-    tags: ["React", "Supabase"],
-    links: {
-      live: "https://theofficialsura.com/",
-    },
+    id: 'andus',
+    title: 'Andus D’Great Schools',
+    summary: 'Public website for a K–12 school in Ikorodu, Lagos.',
+    context: 'Client project, live',
+    stack: 'React, TypeScript',
+    links: { live: 'https://www.andusdgreatschools.com/' },
   },
 ];
