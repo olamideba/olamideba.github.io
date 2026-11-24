@@ -17,6 +17,8 @@ export const profile = {
   },
   links: [
     { label: 'CV', href: 'https://drive.google.com/file/d/1bpdPNnOcoo3NtaAnbXTA7mqaXK_rwBTJ/view?usp=sharing' },
+    { label: 'Google Scholar', href: 'https://scholar.google.com/citations?user=e05FcFEAAAAJ&hl=en' },
+    { label: 'ORCID', href: 'https://orcid.org/0009-0004-9619-6083' },
     { label: 'Email', href: 'mailto:olamidebalogun174@gmail.com' },
     { label: 'GitHub', href: 'https://github.com/olamideba' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/olamideba/' },
