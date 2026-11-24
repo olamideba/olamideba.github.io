@@ -8,7 +8,7 @@ const selected = projects.filter((p) => ['grad-paddy', 'cognito'].includes(p.id)
 
 <Base
   title="Olamide Balogun"
-  description="Olamide Balogun, AI engineer in Lagos, Nigeria. Research interests: reliability, safety and grounding of language models in low-resource languages such as Yoruba."
+  description="Olamide Balogun, AI engineer in Lagos, Nigeria. Research interests: grounding, agent reliability, low-resource languages such as Yoruba, and reliable AI for education."
   path="/"
 >
   <header class="intro">
@@ -20,7 +20,10 @@ const selected = projects.filter((p) => ['grad-paddy', 'cognito'].includes(p.id)
       <h1>{profile.name}</h1>
       <p class="role">{profile.role}</p>
       <p class="seeking">{profile.seeking}</p>
-      <p class="interest">{profile.interest}</p>
+      <p class="interest">{profile.interest.lead}</p>
+      <ul class="interest-list">
+        {profile.interest.items.map((item) => <li>{item}</li>)}
+      </ul>
       <ul class="link-row">
         {profile.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
       </ul>

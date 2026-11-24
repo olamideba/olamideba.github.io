@@ -6,9 +6,17 @@ export const profile = {
   name: 'Olamide Balogun',
   role: 'Applied AI Engineer, Lagos, Nigeria',
   seeking: 'Applying to thesis-based MSc programmes in Computer Science for 2027.',
-  interest:
-    'I want to measure how small multilingual language models fail in low-resource languages such as Yoruba, especially on safety and grounding, and to test what makes them more reliable.',
+  interest: {
+    lead: "I'm interested in when language-model systems can be trusted:",
+    items: [
+      "Grounding: whether a model's answers can be traced back to real sources.",
+      'Agent reliability: whether agents, tools and LLM judges behave dependably.',
+      'Low-resource languages: whether safety and grounding hold up in languages like Yoruba, which I speak natively.',
+      'Education: whether AI tutors and learning assistants stay reliable when students depend on them.',
+    ],
+  },
   links: [
+    { label: 'CV', href: 'https://drive.google.com/file/d/1bpdPNnOcoo3NtaAnbXTA7mqaXK_rwBTJ/view?usp=sharing' },
     { label: 'Email', href: 'mailto:olamidebalogun174@gmail.com' },
     { label: 'GitHub', href: 'https://github.com/olamideba' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/olamideba/' },
@@ -32,7 +40,7 @@ export const publication = {
   pdf: 'https://www.nijotech.com/index.php/nijotech/article/download/5975/2316/23633',
   code: 'https://github.com/olamideba/rag-chatbot-final',
   summary:
-    'My undergraduate thesis, supervised by Dr. Oguntimilehin. I built the retrieval pipeline over the ACL Anthology, generated synthetic question–passage pairs for training, and fine-tuned and evaluated the BAAI/bge embedding models. On the held-out test split, fine-tuning bge-large raised top-1 retrieval accuracy from 73.0% to 88.9% and MRR@10 from 0.82 to 0.92.',
+    'My undergraduate thesis, supervised by Prof. Oguntimilehin. I built the retrieval pipeline over the ACL Anthology, generated synthetic question–passage pairs for training, and fine-tuned and evaluated the BAAI/bge embedding models. On the held-out test split, fine-tuning bge-large raised top-1 retrieval accuracy from 73.0% to 88.9% and MRR@10 from 0.82 to 0.92.',
 };
 
 export interface ResearchProject {
@@ -50,12 +58,11 @@ export const researchProjects: ResearchProject[] = [
     title: 'Does multi-agent debate make LLM judgements more reliable?',
     period: '2026',
     question:
-      'Single LLM judges tend to commit early and stop considering alternatives, which Liang et al. (2024) call Degeneration-of-Thought. Their Multi-Agent Debate framework, and ChatEval (Chan et al., 2024), propose debate as the fix. I wanted to see what debate buys, and what it costs, on a judgement task with planted traps.',
+      "Single LLM judges tend to commit early, which Liang et al. (2024) call Degeneration-of-Thought, and multi-agent debate is proposed as the fix. I tested what debate buys, and what it costs, on a judgement task with planted traps.",
     body: [
-      'I built Parallax, a debate system in which three agents with different roles argue over a shared transcript and a fourth issues the verdict. Each agent can retrieve from the same document collection, and every claim has to cite a retrieved passage. The task: decide whether a research-inquiry email fits a professor’s published work, where some emails contain fabricated citations, inflated claims of alignment, or a funding mismatch buried in the text.',
-      'On 19 hand-labelled cases, the debate reached the correct decision on 17 and a single agent with the same retrieval tool on 16. The debate let one planted trap through against the single agent’s two, but used 5.9 times the tokens. It was also more conservative: it held back both clearly strong candidates. Nineteen synthetic cases is far too few to call this a result. It is a working evaluation harness and a direction.',
-      'Earlier runs showed the debate doing worse than the single agent. Reading the transcripts traced this to two faults in my setup, not in debate itself: a missing field in the test cases that made one agent block every candidate, and an auditor prompt that treated unverifiable self-reported claims as suspicious. One miscalibrated agent was enough to drag the group.',
-      'I also logged how the debate fails. Agents continuing their own turn invented statements from colleagues who had not yet spoken. Re-sending the full transcript every turn made token use grow quadratically, to about 138,000 tokens for one debate. With the model’s hidden reasoning (“thinking”) switched on, turns ran to 4,000–6,000 tokens and a debate took over 450 seconds; switched off, 89 seconds. I have not yet measured whether thinking changes the verdicts. That comparison is next.',
+      "I built Parallax: three agents argue over a shared transcript, a fourth gives the verdict, and every claim must cite a retrieved passage. The task is deciding whether a research-inquiry email fits a professor's published work, with fabricated citations, inflated alignment claims or funding mismatches planted in some emails.",
+      'On 19 hand-labelled cases, debate was correct on 17 and a single agent with the same retrieval on 16. Debate let one trap through against two, but used 5.9 times the tokens. Nineteen cases is too few to call a result. It is a working evaluation harness.',
+      'Earlier runs had debate doing worse than the single agent. Reading the transcripts traced it to one miscalibrated agent dragging the whole group, a setup fault rather than a flaw in debate.',
     ],
     links: [
       { label: 'Write-up', href: '/projects/parallax/' },
@@ -70,8 +77,8 @@ export const researchProjects: ResearchProject[] = [
       'Safety training is concentrated in high-resource languages. Does a small multilingual model refuse harmful requests as reliably in Telugu or Yoruba as in English, and does that change when the same request is written in romanized or code-switched script?',
     body: [
       'This started in Expedition Tiny Aya, a community research programme run by Cohere Labs, where our team tested adversarial prompts in romanized scripts. I ran the comparison prompts against DeepSeek and Mistral models.',
-      'The team is now extending it to a refusal benchmark for Cohere’s Tiny Aya Global model. I wrote the evaluation harness: it runs native, romanized and code-switched prompts through local or hosted models, records the model’s stated language and reasoning, and labels each answer as refused, harmful, or garbled. Its rules never mark an answer harmful on their own, so a refusal phrased in an unfamiliar way cannot be miscounted as a jailbreak; those cases go to a judge model or a human. I am also drafting the Yoruba prompt set.',
-      'Status: the Telugu native-script run is complete (33 prompts) and awaiting judging. No findings yet.',
+      "The programme has ended, and the team is continuing the work as a refusal benchmark for Cohere's Tiny Aya Global model. I wrote the evaluation harness, which runs native, romanized and code-switched prompts and labels each answer as refused, harmful or garbled, sending unclear cases to a judge model or a human. I am also drafting the Yoruba prompt set.",
+      'Status: the Telugu native-script run, 33 prompts, is complete and awaiting judging.',
     ],
     links: [
       { label: 'Expedition code', href: 'https://github.com/manaswithasunkara/AI_Safety_Adversersial_Prompting' },
